@@ -272,6 +272,15 @@ _checkPythonVersion(){
 		kill $TOP_PID
 	fi
 }
+_determinePypiMirror(){
+	printf "[WGDashboard] %s Pinging list of recommended Python Package Index mirror\n" "$install"
+	urls=(
+		"https://pypi.org/simple/"
+		"https://pypi.tuna.tsinghua.edu.cn/simple/"
+		"https://pypi.mirrors.ustc.edu.cn/simple/"
+		"https://mirrors.aliyun.com/pypi/simple/"
+		"https://pypi.douban.com/simple/"
+	)
 
 	# Function to extract hostname and ping it
 	index=1
