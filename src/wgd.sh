@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# wgd.sh - Copyright(C) 2024 Donald Zou [https://github.com/donaldzou]
-# modify by Ali hassanzadeh
+# wgd.sh - Copyright(C) 2024 Donald Zou [https://github.com/Donald Zou]
 # Under Apache-2.0 License
 #trap "kill $TOP_PID"
 export TOP_PID=$$
@@ -30,10 +29,10 @@ fi
 
 dashes='---------------------------------------------------------------------------------'
 equals='============================================================'
-helpMsg="[WGDashboard] Please check ./log/install.txt for more details. For further assistance, please open a ticket on https://github.com/donaldzou/WGDashboard/issues/new/choose, I'm more than happy to help :)"
+helpMsg="[WGDashboard] Please check ./log/install.txt for more details. For further assistance, please open a ticket on https://github.com/iPmartNetwork/WGDashboard/issues/new/choose, I'm more than happy to help :)"
 print_header(){
 	printf "=================================================================================\n"
-	printf "+          <iPWGDashboard>           +\n"
+	printf "+          <WGDashboard> by Donald Zou - https://github.com/iPmartNetwork           +\n"
 	printf "=================================================================================\n"
 }
 
@@ -41,12 +40,12 @@ help () {
   printf "| Usage: ./wgd.sh <option>                                                      |\n"
   printf "|                                                                               |\n"
   printf "| Available options:                                                            |\n"
-  printf "|    start: To start iPWGDashboard.                                               |\n"
-  printf "|    stop: To stop iPWGDashboard.                                                 |\n"
-  printf "|    debug: To start iPWGDashboard in debug mode (i.e run in foreground).         |\n"
-  printf "|    update: To update iPWGDashboard to the newest version from GitHub.           |\n"
-  printf "|    install: To install iPWGDashboard.                                           |\n"
-  printf "| Thank you for using!                          |\n"
+  printf "|    start: To start WGDashboard.                                               |\n"
+  printf "|    stop: To stop WGDashboard.                                                 |\n"
+  printf "|    debug: To start WGDashboard in debug mode (i.e run in foreground).         |\n"
+  printf "|    update: To update WGDashboard to the newest version from GitHub.           |\n"
+  printf "|    install: To install WGDashboard.                                           |\n"
+  printf "| Thank you for using! Your support is my motivation ;)                         |\n"
   printf "=================================================================================\n"
 }
 
@@ -272,6 +271,16 @@ _checkPythonVersion(){
 		kill $TOP_PID
 	fi
 }
+
+_determinePypiMirror(){
+	printf "[WGDashboard] %s Pinging list of recommended Python Package Index mirror\n" "$install"
+	urls=(
+		"https://pypi.org/simple/"
+		"https://pypi.tuna.tsinghua.edu.cn/simple/"
+		"https://pypi.mirrors.ustc.edu.cn/simple/"
+		"https://mirrors.aliyun.com/pypi/simple/"
+		"https://pypi.douban.com/simple/"
+	)
 
 	# Function to extract hostname and ping it
 	index=1
@@ -516,7 +525,7 @@ update_wgd() {
 	_installPythonVenv
 	_installPythonPip	
 	
-	new_ver=$($venv_python -c "import json; import urllib.request; data = urllib.request.urlopen('https://api.github.com/repos/iPmartNetwork/iPWGDasboard/releases/latest').read(); output = json.loads(data);print(output['tag_name'])")
+	new_ver=$($venv_python -c "import json; import urllib.request; data = urllib.request.urlopen('https://api.github.com/repos/iPmartNetwork/iPWGDashboard/releases/latest').read(); output = json.loads(data);print(output['tag_name'])")
 
 	if [ "$commandConfirmed" = "true" ]; then
 		printf "[WGDashboard] Confirmation granted.\n"
