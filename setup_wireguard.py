@@ -15,40 +15,15 @@ def remove_existing_wg():
         subprocess.run(['wg-quick', 'down', WG_INTERFACE])
         subprocess.run(['systemctl', 'disable', f'wg-quick@{WG_INTERFACE}'])
 
-def install_wireguard():
-    """Install WireGuard if not already installed."""
-    try:
-        subprocess.run(['apt', 'update'], check=True)
-        subprocess.run(['apt', 'install', '-y', 'wireguard'], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing WireGuard: {e}")
-        exit(1)
-
-def generate_private_key():
-    """Generate a WireGuard private key."""
-    try:
-        private_key = subprocess.check_output(['wg', 'genkey']).decode('utf-8').strip()
-        return private_key
-    except subprocess.CalledProcessError as e:
-        print(f"Error generating private key: {e}")
-        exit(1)
-
 def init_server():
-    # Install WireGuard
-    install_wireguard()
-
     # Initialize database
     init_db()
     
     # Remove existing WireGuard interface if it exists
     remove_existing_wg()
 
-    # Generate private key automatically
-    private_key = generate_private_key()
-
     # Get or create server config
     server_config = get_server_config()
-    server_config['private_key'] = private_key  # Set the generated private key
     
     # Create WireGuard configuration
     config_content = f"""[Interface]
