@@ -614,6 +614,11 @@
             
             <div class="card">
                 <h2 class="card-title">Active Clients</h2>
+                <form method="get" action="{{ url_for('search_clients') }}">
+                    <input type="text" name="q" placeholder="جستجو بر اساس نام، ایمیل یا IP" value="{{ request.args.get('q', '') }}">
+                    <button type="submit">جستجو</button>
+                    <a href="{{ url_for('export_clients') }}">خروجی CSV</a>
+                </form>
                 <table>
                     <thead>
                         <tr>

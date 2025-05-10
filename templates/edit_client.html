@@ -708,6 +708,25 @@
                     </div>
                 </div>
 
+                <!-- Activity History -->
+                <div class="card">
+                    <h3>تاریخچه فعالیت (۵۰ مورد آخر)</h3>
+                    <table>
+                        <tr>
+                            <th>زمان</th>
+                            <th>آپلود (بایت)</th>
+                            <th>دانلود (بایت)</th>
+                        </tr>
+                        {% for log in activity_logs %}
+                        <tr>
+                            <td>{{ log['timestamp'] }}</td>
+                            <td>{{ log['upload'] }}</td>
+                            <td>{{ log['download'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
                 <!-- Danger Zone -->
                 <div class="delete-zone">
                     <h3>Danger Zone</h3>

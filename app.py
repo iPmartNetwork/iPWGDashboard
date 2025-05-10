@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_file
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_file, send_from_directory
 import os
 import io
 import json
 import datetime
 import subprocess
+import csv
+import secrets
 from database import cleanup_old_traffic_logs, aggregate_traffic_data
 from wireguard import get_client_status
 from database import (
@@ -53,12 +55,18 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# --- 6. ثبت لاگ ورود و خروج ادمین ---
+def log_admin_action(action):
+    with open('admin_actions.log', 'a', encoding='utf-8') as f:
+        f.write(f"{datetime.datetime.now().isoformat()} - {action}\n")
+
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         if request.form['password'] == ADMIN_PASSWORD:
             session['authenticated'] = True
+            log_admin_action('login')
             return redirect(url_for('index'))
         return render_template('login.html', error='Invalid password')
     return render_template('login.html')
@@ -66,6 +74,7 @@ def login():
 # Logout route
 @app.route('/logout')
 def logout():
+    log_admin_action('logout')
     session.pop('authenticated', None)
     return redirect(url_for('login'))
 
@@ -134,7 +143,7 @@ def clients_api():
 def available_ips_api():
     """API endpoint returning available IP addresses"""
     available_ips = []
-    base_ip = '10.8.0.'
+    base_ip = '172.16.0.'
     
     with get_db_connection() as conn:
         used_ips = [row[0] for row in conn.execute('SELECT assigned_ip FROM clients').fetchall()]
@@ -162,9 +171,15 @@ def server_config_api():
         'endpoint': f"{PUBLIC_IP}:{WG_PORT}",
         'subnet': '172.16.0.0/24',  # You might want to import this from config too
         'dns_servers': '1.1.1.1, 8.8.8.8',  # Consider importing this
-        'mtu': 1420,  # Consider importing this
+        'mtu': 1280,  # Consider importing this
         'keepalive': 25  # Consider importing this
     })
+
+# --- 1. ارسال فایل کانفیگ به ایمیل کاربر پس از ایجاد ---
+def send_config_email(email, client_config):
+    # این تابع باید با SMTP واقعی جایگزین شود
+    print(f"Send config to {email}")
+    # ...ایمیل واقعی نیاز به پیاده‌سازی دارد...
 
 @app.route('/clients/add', methods=['GET', 'POST'])
 @login_required
@@ -205,6 +220,11 @@ def add_client_route():
             client = get_client(client_id)
             if add_client_to_wireguard(client):
                 flash('Client added successfully!', 'success')
+                # ارسال ایمیل کانفیگ
+                if client.get('email'):
+                    server_config = get_server_config()
+                    client_config = generate_client_config(client, server_config)
+                    send_config_email(client['email'], client_config)
             else:
                 flash('Client added to database but failed to configure WireGuard', 'warning')
             
@@ -255,6 +275,18 @@ def client_detail(client_id):
         client_config=client_config, 
         qr_code=qr_code
     )
+
+# --- 2. تاریخچه فعالیت کاربر (ورود/خروج و مصرف ترافیک) ---
+def get_client_activity_logs(client_id):
+    with get_db_connection() as conn:
+        logs = conn.execute('''
+            SELECT timestamp, upload, download
+            FROM traffic_logs
+            WHERE client_id = ?
+            ORDER BY timestamp DESC
+            LIMIT 50
+        ''', (client_id,)).fetchall()
+    return logs
 
 @app.route('/clients/<int:client_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -393,6 +425,19 @@ def client_qr_code(client_id):
     
     return jsonify({'qr_code': qr_code})
 
+# --- 3. جستجو و فیلتر کاربران ---
+@app.route('/clients/search')
+@login_required
+def search_clients():
+    q = request.args.get('q', '')
+    with get_db_connection() as conn:
+        clients = conn.execute('''
+            SELECT * FROM clients
+            WHERE name LIKE ? OR email LIKE ? OR assigned_ip LIKE ?
+            ORDER BY name
+        ''', (f'%{q}%', f'%{q}%', f'%{q}%')).fetchall()
+    return render_template('clients.html', clients=clients)
+
 # Server configuration routes
 @app.route('/server-config', methods=['GET', 'POST'])
 @login_required
@@ -419,6 +464,28 @@ def server_config():
         return redirect(url_for('server_config'))
     
     return render_template('server_config.html', config=config)
+
+# --- 4. تغییر رمز عبور ادمین از پنل ---
+@app.route('/settings/change-password', methods=['GET', 'POST'])
+@login_required
+def change_admin_password():
+    if request.method == 'POST':
+        old = request.form['old_password']
+        new = request.form['new_password']
+        if old == ADMIN_PASSWORD:
+            # در عمل باید رمز جدید را در فایل config یا دیتابیس ذخیره کنید
+            flash('Password changed (demo only, not persistent)', 'success')
+        else:
+            flash('Old password incorrect', 'error')
+    return render_template('change_password.html')
+
+# --- 5. تم تاریک/روشن (تنظیم در سشن) ---
+@app.route('/theme/<theme>')
+@login_required
+def set_theme(theme):
+    if theme in ['dark', 'light']:
+        session['theme'] = theme
+    return redirect(request.referrer or url_for('index'))
 
 # Traffic monitoring routes
 @app.route('/traffic')
@@ -677,6 +744,36 @@ def clear_logs():
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# --- 7. احراز هویت دومرحله‌ای (کد اولیه) ---
+@app.route('/2fa', methods=['GET', 'POST'])
+def two_factor():
+    if request.method == 'POST':
+        code = request.form['code']
+        if code == session.get('2fa_code'):
+            session['2fa'] = True
+            return redirect(url_for('index'))
+        return render_template('2fa.html', error='Invalid code')
+    # تولید کد تصادفی و نمایش (در عمل باید ارسال شود)
+    code = str(secrets.randbelow(1000000)).zfill(6)
+    session['2fa_code'] = code
+    print(f"2FA code: {code}")  # در عمل باید ارسال شود
+    return render_template('2fa.html')
+
+# --- 8. خروجی گرفتن از لیست کاربران به صورت CSV ---
+@app.route('/clients/export')
+@login_required
+def export_clients():
+    clients = get_all_clients()
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerow(['id', 'name', 'email', 'assigned_ip', 'data_limit', 'data_usage', 'expiry_date'])
+    for c in clients:
+        cw.writerow([c['id'], c['name'], c['email'], c['assigned_ip'], c['data_limit'], c['data_usage'], c['expiry_date']])
+    output = io.BytesIO()
+    output.write(si.getvalue().encode('utf-8'))
+    output.seek(0)
+    return send_file(output, mimetype='text/csv', as_attachment=True, download_name='clients.csv')
 
 def setup_scheduled_tasks():
     """Setup scheduled maintenance tasks"""

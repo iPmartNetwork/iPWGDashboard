@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fa" {% if session.theme == 'dark' %}class="dark"{% endif %}>
+<head>
+    <!-- ...existing code... -->
+    {% if session.theme == 'dark' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='dark.css') }}">
+    {% else %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}">
+    {% endif %}
+</head>
+<body>
+    <a href="{{ url_for('set_theme', theme='dark') }}">تم تاریک</a> | 
+    <a href="{{ url_for('set_theme', theme='light') }}">تم روشن</a>
+    <!-- ...existing code... -->
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,6 +1,9 @@
 import datetime
 import subprocess
 import re
+import smtplib
+from email.mime.text import MIMEText
+import secrets
 
 def format_bytes(bytes_value):
     """Format bytes to human-readable format"""
@@ -118,3 +121,25 @@ def get_server_stats():
         stats['wg_version'] = "Unknown"
     
     return stats
+
+def send_config_email(email, client_config, smtp_server='localhost', smtp_port=25, sender='noreply@example.com'):
+    """ارسال فایل کانفیگ به ایمیل کاربر (نمونه ساده، نیاز به تنظیم SMTP واقعی)"""
+    msg = MIMEText(client_config)
+    msg['Subject'] = 'WireGuard Client Config'
+    msg['From'] = sender
+    msg['To'] = email
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.sendmail(sender, [email], msg.as_string())
+        return True
+    except Exception as e:
+        print(f"Email send failed: {e}")
+        return False
+
+def generate_2fa_code():
+    """تولید کد ۶ رقمی برای ۲FA"""
+    return str(secrets.randbelow(1000000)).zfill(6)
+
+def get_theme_from_session(session):
+    """دریافت تم فعلی از سشن"""
+    return session.get('theme', 'light')
