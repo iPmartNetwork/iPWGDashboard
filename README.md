@@ -36,7 +36,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/iPmartNetwork/iPWGDashboard/ma
 > - Update `config.py` with server details.
 > - Create a systemd service to auto-start the panel after reboot.
 
-### 3️⃣ Manual Installation (Optional)
+###  Manual Installation (Optional)
 ```bash
 sudo apt update
 sudo apt install -y wireguard python3-pip git
