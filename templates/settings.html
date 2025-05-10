@@ -1,10 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iPWGD - Settings</title>
     <style>
+        /* Theme Variables */
+        html[data-theme="dark"] {
+            --bg-primary: #111111;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #222222;
+            --text-primary: #f5f5f5;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --accent-color: #444444;
+            --success: #388e3c;
+            --danger: #d32f2f;
+            --warning: #f57c00;
+            --info: #0288d1;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --hover-bg: rgba(255, 255, 255, 0.05);
+        }
+        
+        html[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e8e8e8;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --border-color: #dddddd;
+            --accent-color: #eeeeee;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --info: #2196f3;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.05);
+        }
+        
         /* Reset & Base Styles */
         * {
             margin: 0;
@@ -14,8 +47,8 @@
         }
         
         body {
-            background-color: #ffffff; /* Light background */
-            color: #222222; /* Dark text */
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -28,10 +61,10 @@
         
         .sidebar {
             width: 250px;
-            background-color: #f5f5f5; /* Light sidebar */
+            background-color: var(--bg-secondary);
             padding: 30px 0;
-            border-right: 1px solid #dddddd;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
             z-index: 10;
             transition: all 0.3s ease;
         }
@@ -40,7 +73,6 @@
             flex: 1;
             padding: 30px;
             overflow-y: auto;
-            background-color: #ffffff; /* Light content area */
         }
         
         /* Navigation */
@@ -57,7 +89,7 @@
             display: flex;
             align-items: center;
             padding: 12px 25px;
-            color: #222222;
+            color: var(--text-primary);
             text-decoration: none;
             transition: all 0.2s ease;
             border-radius: 0 20px 20px 0;
@@ -65,19 +97,19 @@
         }
         
         .nav-link:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--hover-bg);
         }
         
         .nav-link.active {
-            background-color: rgba(0, 0, 0, 0.05);
-            border-left: 4px solid #2196f3;
+            background-color: var(--hover-bg);
+            border-left: 4px solid var(--info);
             font-weight: 500;
         }
         
         /* Brand */
         .brand {
             padding: 0 25px 20px;
-            border-bottom: 1px solid #dddddd;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 20px;
         }
         
@@ -116,7 +148,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #eeeeee;
+            background-color: var(--accent-color);
             transition: .4s;
             border-radius: 24px;
         }
@@ -128,13 +160,13 @@
             width: 18px;
             left: 3px;
             bottom: 3px;
-            background-color: #222222;
+            background-color: var(--text-primary);
             transition: .4s;
             border-radius: 50%;
         }
         
         input:checked + .toggle-slider {
-            background-color: #2196f3;
+            background-color: var(--info);
         }
         
         input:checked + .toggle-slider:before {
@@ -148,7 +180,7 @@
             align-items: center;
             margin-bottom: 30px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #dddddd;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .heading {
@@ -158,8 +190,8 @@
         
         /* Buttons */
         .btn {
-            background-color: #eeeeee; /* Light button */
-            color: #222222;
+            background-color: var(--accent-color);
+            color: var(--text-primary);
             border: none;
             padding: 10px 20px;
             border-radius: 6px;
@@ -175,17 +207,17 @@
         }
         
         .btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--hover-bg);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
         .btn-success {
-            background-color: #4caf50;
+            background-color: var(--success);
         }
         
         .btn-danger {
-            background-color: #f44336;
+            background-color: var(--danger);
         }
         
         .btn-sm {
@@ -196,13 +228,13 @@
         
         /* Cards */
         .card {
-            background-color: #f5f5f5; /* Light card */
+            background-color: var(--bg-secondary);
             border-radius: 10px;
             padding: 25px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
             transition: box-shadow 0.2s ease, transform 0.2s ease;
-            border: 1px solid #dddddd;
+            border: 1px solid var(--border-color);
         }
         
         .card:hover {
@@ -225,7 +257,7 @@
             left: 0;
             width: 40px;
             height: 3px;
-            background-color: #2196f3;
+            background-color: var(--info);
             border-radius: 3px;
         }
         
@@ -244,15 +276,15 @@
         }
         
         th {
-            background-color: #e8e8e8;
+            background-color: var(--bg-tertiary);
             font-weight: 500;
-            color: #555555;
+            color: var(--text-secondary);
             position: sticky;
             top: 0;
         }
         
         tr {
-            border-bottom: 1px solid #dddddd;
+            border-bottom: 1px solid var(--border-color);
             transition: background-color 0.2s ease;
         }
         
@@ -261,7 +293,7 @@
         }
         
         tr:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--hover-bg);
         }
         
         .status {
@@ -273,12 +305,12 @@
         }
         
         .status.online {
-            background-color: #4caf50;
+            background-color: var(--success);
             box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
         }
         
         .status.offline {
-            background-color: #f44336;
+            background-color: var(--danger);
             box-shadow: 0 0 5px rgba(244, 67, 54, 0.5);
         }
         
@@ -306,7 +338,7 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #555555;
+            color: var(--text-secondary);
         }
         
         .search-input {
@@ -334,7 +366,7 @@
         }
         
         .modal-content {
-            background-color: #f5f5f5;
+            background-color: var(--bg-secondary);
             border-radius: 10px;
             width: 90%;
             max-width: 600px;
@@ -343,7 +375,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             transform: translateY(0);
             transition: transform 0.3s ease;
-            border: 1px solid #dddddd;
+            border: 1px solid var(--border-color);
         }
         
         .modal.active .modal-content {
@@ -356,17 +388,17 @@
             right: 20px;
             font-size: 24px;
             cursor: pointer;
-            color: #555555;
+            color: var(--text-secondary);
             transition: color 0.2s ease;
         }
         
         .close:hover {
-            color: #f44336;
+            color: var(--danger);
         }
         
         /* QR Code Placeholder */
         .qr-placeholder {
-            background-color: #e8e8e8;
+            background-color: var(--bg-tertiary);
             width: 200px;
             height: 200px;
             margin: 20px auto;
@@ -374,7 +406,7 @@
             justify-content: center;
             align-items: center;
             border-radius: 10px;
-            border: 1px dashed #dddddd;
+            border: 1px dashed var(--border-color);
         }
         
         .qr-image {
@@ -396,12 +428,12 @@
         }
         
         .flash-message.success {
-            background-color: #4caf50;
+            background-color: var(--success);
             color: white;
         }
         
         .flash-message.error {
-            background-color: #f44336;
+            background-color: var(--danger);
             color: white;
         }
         
@@ -430,10 +462,9 @@
             margin-top: 40px;
             text-align: center;
             padding: 20px 0;
-            color: #555555;
+            color: var(--text-secondary);
             font-size: 14px;
-            border-top: 1px solid #dddddd;
-            background-color: #f5f5f5; /* Light footer */
+            border-top: 1px solid var(--border-color);
         }
         
         /* Responsive Adjustments */
@@ -445,7 +476,7 @@
             .sidebar {
                 width: 100%;
                 border-right: none;
-                border-bottom: 1px solid #dddddd;
+                border-bottom: 1px solid var(--border-color);
                 padding: 15px 0;
             }
             
@@ -468,7 +499,7 @@
         }
         /* Logs Styles */
 .logs-container {
-    background-color: #e8e8e8;
+    background-color: var(--bg-tertiary);
     padding: 15px;
     border-radius: 6px;
     overflow-x: auto;
@@ -492,7 +523,7 @@
 
 /* Traffic Chart Styles */
 #traffic-chart {
-    background-color: #e8e8e8;
+    background-color: var(--bg-tertiary);
     border-radius: 6px;
     padding: 20px;
     margin-top: 20px;
@@ -512,23 +543,23 @@
         }
         
         .setting-card {
-            background-color: #f5f5f5;
+            background-color: var(--bg-secondary);
             border-radius: 10px;
             padding: 20px;
-            border: 1px solid #dddddd;
+            border: 1px solid var(--border-color);
         }
         
         .setting-title {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 10px;
-            color: #222222;
+            color: var(--text-primary);
         }
         
         .setting-value {
             font-family: monospace;
             padding: 8px;
-            background-color: #e8e8e8;
+            background-color: var(--bg-tertiary);
             border-radius: 4px;
             word-break: break-all;
         }
@@ -547,21 +578,21 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #555555;
+            color: var(--text-secondary);
             font-weight: 500;
         }
         
         .form-group input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #dddddd;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            background-color: #e8e8e8;
-            color: #222222;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
         }
         
         .form-group input:focus {
-            border-color: #2196f3;
+            border-color: var(--info);
             outline: none;
             box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
         }
@@ -582,12 +613,12 @@
         }
         
         .status-indicator.active {
-            background-color: #4caf50;
+            background-color: var(--success);
             box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
         }
         
         .status-indicator.inactive {
-            background-color: #f44336;
+            background-color: var(--danger);
             box-shadow: 0 0 8px rgba(244, 67, 54, 0.5);
         }
     </style>
@@ -682,7 +713,7 @@
             
             <!-- Danger Zone -->
             <div class="card settings-section">
-                <h2 class="card-title" style="color: #f44336;">Danger Zone</h2>
+                <h2 class="card-title" style="color: var(--danger);">Danger Zone</h2>
                 <div class="settings-actions">
                     <button onclick="resetServer()" class="btn btn-danger">
                         Reset Server Configuration
