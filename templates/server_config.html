@@ -25,8 +25,8 @@
             font-weight: 600;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
-            color: var(--text-primary);
+            border-bottom: 2px solid #dddddd;
+            color: #222222;
         }
 
         .config-row {
@@ -38,7 +38,7 @@
 
         .config-label {
             font-weight: 500;
-            color: var(--text-secondary);
+            color: #555555;
             flex: 1;
         }
 
@@ -49,22 +49,22 @@
         .config-input {
             width: 100%;
             padding: 8px 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #dddddd;
             border-radius: 6px;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            background-color: #ffffff;
+            color: #222222;
             font-size: 14px;
             transition: all 0.2s ease;
         }
 
         .config-input:focus {
             outline: none;
-            border-color: var(--info);
+            border-color: #0288d1;
             box-shadow: 0 0 0 2px rgba(2, 136, 209, 0.2);
         }
 
         .config-input:disabled {
-            background-color: var(--bg-tertiary);
+            background-color: #e8e8e8;
             cursor: not-allowed;
         }
 
@@ -85,27 +85,77 @@
         }
 
         .status-active {
-            background-color: var(--success);
+            background-color: #4caf50;
             color: white;
         }
 
         .status-inactive {
-            background-color: var(--danger);
+            background-color: #f44336;
             color: white;
         }
 
         .config-help {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #555555;
             margin-top: 4px;
         }
 
-        /* Switch Styles */
+        /* Fullscreen and Responsive Layout */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #222222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f5f5f5;
+            color: #555555;
+            border-top: 1px solid #dddddd;
+        }
+
+        @media (max-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 34px;
+            height: 20px;
         }
 
         .switch input {
@@ -121,137 +171,34 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--border-color);
-            transition: .4s;
-            border-radius: 24px;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 20px;
         }
 
         .switch-slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 14px;
+            width: 14px;
             left: 3px;
             bottom: 3px;
             background-color: white;
-            transition: .4s;
+            transition: 0.4s;
             border-radius: 50%;
         }
 
         input:checked + .switch-slider {
-            background-color: var(--success);
+            background-color: #4caf50;
         }
 
         input:checked + .switch-slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Alert Styles */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-info {
-            background-color: rgba(2, 136, 209, 0.1);
-            border: 1px solid var(--info);
-            color: var(--info);
-        }
-
-        .alert-warning {
-            background-color: rgba(245, 124, 0, 0.1);
-            border: 1px solid var(--warning);
-            color: var(--warning);
-        }
-
-        .config-backup {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: var(--bg-tertiary);
-            border-radius: 6px;
-            border: 1px dashed var(--border-color);
-        }
-
-        .terminal {
-            background-color: var(--bg-tertiary);
-            border-radius: 6px;
-            padding: 15px;
-            font-family: monospace;
-            margin-top: 10px;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .terminal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .copy-btn {
-            padding: 4px 8px;
-            font-size: 12px;
-            background-color: var(--accent-color);
-            border: none;
-            border-radius: 4px;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .copy-btn:hover {
-            background-color: var(--hover-bg);
-        }
-    </style>
-    <style>
-        /* Removed dark mode styles */
-        body {
-            background-color: #ffffff; /* Light background */
-            color: #222222; /* Dark text */
-            line-height: 1.6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
-        .sidebar {
-            background-color: #f5f5f5; /* Light sidebar */
-            border-right: 1px solid #dddddd;
-        }
-        .main-content {
-            background-color: #ffffff; /* Light content area */
-        }
-        .config-section {
-            background-color: #f5f5f5; /* Light config section */
-            border: 1px solid #dddddd;
-        }
-        .card {
-            background-color: #f5f5f5; /* Light card */
-            border: 1px solid #dddddd;
-        }
-        .btn {
-            background-color: #eeeeee; /* Light button */
-            color: #222222;
-        }
-        .footer {
-            background-color: #f5f5f5; /* Light footer */
-            color: #555555;
+            transform: translateX(14px);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Your existing sidebar code here -->
-        
         <main class="main-content">
             <div class="header">
                 <h1 class="heading">Server Configuration</h1>
@@ -370,6 +317,9 @@ Loading configuration...
                 </div>
             </div>
         </main>
+        <footer class="footer">
+            &copy; 2023 iPWGD Dashboard
+        </footer>
     </div>
 
     <script>
