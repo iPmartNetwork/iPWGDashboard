@@ -797,6 +797,22 @@ def setup_scheduled_tasks():
     
     scheduler.start()
 
+@app.route('/clients/<int:client_id>/edit-endpoint', methods=['POST'])
+@login_required
+def edit_client_endpoint(client_id):
+    client = get_client(client_id)
+    if not client:
+        flash('Client not found!', 'error')
+        return redirect(url_for('clients'))
+    new_endpoint = request.form.get('remote_endpoint')
+    if not new_endpoint:
+        flash('Remote Endpoint is required', 'error')
+        return redirect(url_for('edit_client', client_id=client_id))
+    # فرض بر این است که ستون remote_endpoint در جدول clients وجود دارد
+    update_client(client_id, remote_endpoint=new_endpoint)
+    flash('Remote Endpoint updated successfully!', 'success')
+    return redirect(url_for('edit_client', client_id=client_id))
+
 if __name__ == '__main__':
     setup_scheduled_tasks()
     app.run(debug=True, host='0.0.0.0')

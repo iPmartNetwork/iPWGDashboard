@@ -727,6 +727,14 @@
                     </table>
                 </div>
 
+                <!-- Remote Endpoint Change -->
+                <h3>تغییر Remote Endpoint</h3>
+                <form method="post" action="{{ url_for('edit_client_endpoint', client_id=client.id) }}">
+                    <label for="remote_endpoint">Remote Endpoint:</label>
+                    <input type="text" id="remote_endpoint" name="remote_endpoint" value="{{ client.remote_endpoint or '' }}" required>
+                    <button type="submit">ذخیره</button>
+                </form>
+
                 <!-- Danger Zone -->
                 <div class="delete-zone">
                     <h3>Danger Zone</h3>
