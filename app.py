@@ -445,21 +445,23 @@ def server_config():
     config = get_server_config()
     
     if request.method == 'POST':
+        # استفاده از get به جای [] برای جلوگیری از KeyError
         updates = {
-            'endpoint': request.form['endpoint'],
-            'subnet': request.form['subnet'],
-            'dns_servers': request.form['dns_servers'],
-            'mtu': int(request.form['mtu']),
-            'keepalive': int(request.form['keepalive'])
+            'endpoint': request.form.get('endpoint', ''),
+            'subnet': request.form.get('subnet', ''),
+            'dns_servers': request.form.get('dns_servers', ''),
+            'mtu': int(request.form.get('mtu', 1280)),
+            'keepalive': int(request.form.get('keepalive', 25))
         }
-        
+        # بررسی اینکه هیچ فیلد ضروری خالی نباشد
+        if not updates['endpoint'] or not updates['subnet']:
+            flash('Endpoint و Subnet نباید خالی باشند.', 'error')
+            return render_template('server_config.html', config=config)
         # Update in database
         update_server_config(**updates)
-        
         # Apply changes to WireGuard
         config = get_server_config()  # Get updated config with keys
         apply_server_config(config)
-        
         flash('Server configuration updated successfully!', 'success')
         return redirect(url_for('server_config'))
     
