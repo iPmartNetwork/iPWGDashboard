@@ -160,8 +160,8 @@ def server_config_api():
     # Use values imported from config module
     return jsonify({
         'endpoint': f"{PUBLIC_IP}:{WG_PORT}",
-        'subnet': '10.8.0.0/24',  # You might want to import this from config too
-        'dns_servers': '1.1.1.1, 1.0.0.1',  # Consider importing this
+        'subnet': '172.16.0.0/24',  # You might want to import this from config too
+        'dns_servers': '1.1.1.1, 8.8.8.8',  # Consider importing this
         'mtu': 1420,  # Consider importing this
         'keepalive': 25  # Consider importing this
     })
