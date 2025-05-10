@@ -68,19 +68,25 @@ def get_server_stats():
         with open('/proc/meminfo', 'r') as f:
             mem_info = {}
             for line in f:
-                key, value = line.split(':')
-                mem_info[key.strip()] = int(value.strip().split()[0])
-            
-            total = mem_info['MemTotal']
-            free = mem_info['MemFree']
+                if ':' not in line:
+                    continue  # Skip malformed lines
+                key, value = line.split(':', 1)
+                try:
+                    mem_value = int(value.strip().split()[0])
+                except (ValueError, IndexError):
+                    mem_value = 0
+                mem_info[key.strip()] = mem_value
+
+            total = mem_info.get('MemTotal', 0)
+            free = mem_info.get('MemFree', 0)
             buffers = mem_info.get('Buffers', 0)
             cached = mem_info.get('Cached', 0)
-            
+
             used = total - free - buffers - cached
             stats['memory'] = {
                 'total': total * 1024,  # Convert to bytes
                 'used': used * 1024,
-                'percentage': (used / total) * 100
+                'percentage': (used / total) * 100 if total else 0
             }
     except:
         stats['memory'] = {'total': 0, 'used': 0, 'percentage': 0}

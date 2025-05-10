@@ -780,22 +780,34 @@ def setup_scheduled_tasks():
     scheduler = BackgroundScheduler()
     
     # Update client status every minute
-    scheduler.add_job(get_client_status, 'interval', minutes=1)
+    try:
+        scheduler.add_job(get_client_status, 'interval', minutes=1)
+    except Exception as e:
+        print(f"Error scheduling get_client_status: {e}")
     
     # Aggregate traffic data daily
-    scheduler.add_job(aggregate_traffic_data, 'cron', hour=0, minute=5)
+    try:
+        scheduler.add_job(aggregate_traffic_data, 'cron', hour=0, minute=5)
+    except Exception as e:
+        print(f"Error scheduling aggregate_traffic_data: {e}")
     
     # Clean up old traffic logs weekly
-    scheduler.add_job(
-        cleanup_old_traffic_logs, 
-        'cron', 
-        day_of_week='sun', 
-        hour=1, 
-        minute=0,
-        args=[30]  # Keep 30 days of detailed logs
-    )
+    try:
+        scheduler.add_job(
+            cleanup_old_traffic_logs, 
+            'cron', 
+            day_of_week='sun', 
+            hour=1, 
+            minute=0,
+            args=[30]  # Keep 30 days of detailed logs
+        )
+    except Exception as e:
+        print(f"Error scheduling cleanup_old_traffic_logs: {e}")
     
-    scheduler.start()
+    try:
+        scheduler.start()
+    except Exception as e:
+        print(f"Error starting scheduler: {e}")
 
 @app.route('/clients/<int:client_id>/edit-endpoint', methods=['POST'])
 @login_required
