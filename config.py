@@ -7,8 +7,8 @@ WG_CONFIG_PATH = '/etc/wireguard/wg0.conf'
 WG_INTERFACE = 'wg0'
 
 # Network Configuration
-WG_SUBNET = '10.8.0.0/24'
-WG_DNS = '1.1.1.1, 1.0.0.1'
+WG_SUBNET = '172.16.0.0/24'
+WG_DNS = '8.8.8.8, 1.1.1.1'
 WG_MTU = 1420
 WG_PERSISTENT_KEEPALIVE = 25
 
