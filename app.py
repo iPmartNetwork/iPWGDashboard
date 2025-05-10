@@ -468,7 +468,6 @@ def search_clients():
 def server_config():
     config = get_server_config()
     if request.method == 'POST':
-        # استفاده از get و کنترل مقدار عددی
         try:
             mtu = int(request.form.get('mtu', 1280))
         except (ValueError, TypeError):
@@ -488,11 +487,15 @@ def server_config():
         if not updates['endpoint'] or not updates['subnet']:
             flash('Endpoint و Subnet نباید خالی باشند.', 'error')
             return render_template('server_config.html', config=config)
-        update_server_config(**updates)
-        config = get_server_config()
-        apply_server_config(config)
-        flash('Server configuration updated successfully!', 'success')
-        return redirect(url_for('server_config'))
+        try:
+            update_server_config(**updates)
+            config = get_server_config()
+            apply_server_config(config)
+            flash('Server configuration updated successfully!', 'success')
+            return redirect(url_for('server_config'))
+        except Exception as e:
+            flash(f'Failed to save configuration. Please try again. ({e})', 'error')
+            return render_template('server_config.html', config=config)
     return render_template('server_config.html', config=config)
 
 # --- 4. تغییر رمز عبور ادمین از پنل ---
