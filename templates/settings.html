@@ -692,6 +692,34 @@
                     </button>
                 </div>
             </div>
+
+            <hr>
+            <h3>ارسال بکاپ به تلگرام</h3>
+            <button id="send-telegram-btn" type="button">ارسال بکاپ به تلگرام</button>
+            <div id="telegram-backup-result"></div>
+            <script>
+            document.getElementById('send-telegram-btn').onclick = function() {
+                var btn = this;
+                btn.disabled = true;
+                btn.innerText = 'در حال ارسال...';
+                fetch('{{ url_for("backup_send_telegram") }}', {method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                .then(r => r.json())
+                .then(data => {
+                    if(data.success) {
+                        document.getElementById('telegram-backup-result').innerHTML = '<span style="color:green">بکاپ با موفقیت ارسال شد.</span>';
+                    } else {
+                        document.getElementById('telegram-backup-result').innerHTML = '<span style="color:red">ارسال بکاپ به تلگرام ناموفق بود.</span>';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('telegram-backup-result').innerHTML = '<span style="color:red">خطا در ارسال بکاپ.</span>';
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerText = 'ارسال بکاپ به تلگرام';
+                });
+            };
+            </script>
         </main>
     </div>
     

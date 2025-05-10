@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>لاگ‌های مدیریتی</h2>
+<pre style="background:#222;color:#eee;max-height:500px;overflow:auto;direction:ltr">{{ logs|join('') }}</pre>
+{% endblock %}

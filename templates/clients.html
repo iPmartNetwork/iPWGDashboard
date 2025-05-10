@@ -614,50 +614,62 @@
             
             <div class="card">
                 <h2 class="card-title">Active Clients</h2>
-                <form method="get" action="{{ url_for('search_clients') }}">
-                    <input type="text" name="q" placeholder="جستجو بر اساس نام، ایمیل یا IP" value="{{ request.args.get('q', '') }}">
-                    <button type="submit">جستجو</button>
-                    <a href="{{ url_for('export_clients') }}">خروجی CSV</a>
+                <form method="get" action="{{ url_for('advanced_search_clients') }}">
+                    <input type="text" name="q" placeholder="جستجو..." value="{{ request.args.get('q', '') }}">
+                    <select name="status">
+                        <option value="">همه</option>
+                        <option value="active">فعال</option>
+                        <option value="inactive">غیرفعال</option>
+                    </select>
+                    <select name="online">
+                        <option value="">همه</option>
+                        <option value="online">آنلاین</option>
+                        <option value="offline">آفلاین</option>
+                    </select>
+                    <button type="submit">جستجوی پیشرفته</button>
                 </form>
+                <form method="post" action="{{ url_for('bulk_delete_clients') }}">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Name</th>
-                            <th>IP Address</th>
-                            <th>Data Usage</th>
-                            <th>Last Seen</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if clients %}
-                            {% for client in clients %}
-                                <tr>
-                                    <td>
-                                        <span class="status {{ 'online' if client.online else 'offline' }}"></span>
-                                        {{ 'Online' if client.online else 'Offline' }}
-                                    </td>
-                                    <td>{{ client.name }}</td>
-                                    <td>{{ client.assigned_ip }}</td>
-                                    <td>{{ client.data_usage_formatted }}</td>
-                                    <td>{{ client.last_seen_formatted }}</td>
-                                    <td class="action-buttons">
-                                        <button class="btn btn-sm" onclick="showClient({{ client.id }})">Show</button>
-                                        <button onclick="showQRCode({{ client.id }})" class="btn btn-sm">QR</button>
-                                        <form action="/clients/{{ client.id }}/delete" method="POST" style="display: inline;">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to revoke this client?')">Revoke</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="6" class="text-center">No clients found</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
+                    <tr>
+                        <th><input type="checkbox" id="select_all" onclick="for(let c of document.querySelectorAll('.sel')) c.checked=this.checked"></th>
+                        <th>نام</th>
+                        <th>ایمیل</th>
+                        <th>IP</th>
+                        <th>وضعیت</th>
+                        <th>آنلاین</th>
+                        <th>آخرین اتصال</th>
+                        <th>عملیات</th>
+                    </tr>
+                    {% for client in clients %}
+                    <tr>
+                        <td><input type="checkbox" class="sel" name="client_ids" value="{{ client.id }}"></td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.assigned_ip }}</td>
+                        <td>
+                            <button type="button" onclick="toggleActive({{ client.id }}, this)">
+                                {{ 'فعال' if client.is_active else 'غیرفعال' }}
+                            </button>
+                        </td>
+                        <td>
+                            {% if client.online %}
+                                <span style="color:green">●</span>
+                            {% else %}
+                                <span style="color:red">●</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ client.last_seen_formatted }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_client', client_id=client.id) }}">ویرایش</a>
+                            <form method="post" action="{{ url_for('delete_client_route', client_id=client.id) }}" style="display:inline">
+                                <button type="submit" onclick="return confirm('حذف شود؟')">حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </table>
+                <button type="submit" onclick="return confirm('آیا مطمئن هستید؟')">حذف گروهی</button>
+                </form>
             </div>
         </main>
     </div>
@@ -762,6 +774,17 @@ function showQRCode(clientId) {
                 }, 5000);
             });
         });
+
+        function toggleActive(clientId, btn) {
+            fetch('/clients/' + clientId + '/toggle-active', {method:'POST'})
+            .then(r=>r.json()).then(data=>{
+                if(data.success) {
+                    btn.innerText = data.active ? 'فعال' : 'غیرفعال';
+                } else {
+                    alert(data.message || 'خطا');
+                }
+            });
+        }
     </script>
 </body>
 </html>

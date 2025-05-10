@@ -30,6 +30,27 @@ app.config['SECRET_KEY'] = SECRET_KEY
 from apscheduler.schedulers.background import BackgroundScheduler
 from functools import wraps
 from flask import session, redirect, url_for
+import requests
+
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', 'YOUR_BOT_TOKEN')
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', 'YOUR_CHAT_ID')
+
+def send_backup_to_telegram(backup_json):
+    """ارسال بکاپ به تلگرام به صورت فایل"""
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
+    files = {
+        'document': ('backup.json', io.BytesIO(backup_json.encode('utf-8')))
+    }
+    data = {
+        'chat_id': TELEGRAM_CHAT_ID,
+        'caption': 'iPWG Backup'
+    }
+    try:
+        response = requests.post(url, data=data, files=files, timeout=20)
+        return response.ok
+    except Exception as e:
+        print(f"Telegram send error: {e}")
+        return False
 
 # Initialize database using an app context instead of before_first_request
 def initialize_database():
@@ -60,15 +81,36 @@ def log_admin_action(action):
     with open('admin_actions.log', 'a', encoding='utf-8') as f:
         f.write(f"{datetime.datetime.now().isoformat()} - {action}\n")
 
+# 6. امنیت بیشتر: قفل شدن ادمین بعد از چند بار ورود ناموفق
+FAILED_LOGIN_LIMIT = 5
+FAILED_LOGIN_TIMEOUT = 300  # ثانیه
+
+def is_admin_locked():
+    lock_info = session.get('admin_lock', {'count': 0, 'time': 0})
+    if lock_info['count'] >= FAILED_LOGIN_LIMIT:
+        if (datetime.datetime.now().timestamp() - lock_info['time']) < FAILED_LOGIN_TIMEOUT:
+            return True
+        else:
+            session['admin_lock'] = {'count': 0, 'time': 0}
+    return False
+
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if is_admin_locked():
+        return render_template('login.html', error='Too many failed attempts. Try again later.')
     if request.method == 'POST':
         if request.form['password'] == ADMIN_PASSWORD:
             session['authenticated'] = True
+            session.pop('admin_lock', None)
             log_admin_action('login')
             return redirect(url_for('index'))
-        return render_template('login.html', error='Invalid password')
+        else:
+            lock_info = session.get('admin_lock', {'count': 0, 'time': 0})
+            lock_info['count'] += 1
+            lock_info['time'] = datetime.datetime.now().timestamp()
+            session['admin_lock'] = lock_info
+            return render_template('login.html', error='Invalid password')
     return render_template('login.html')
 
 # Logout route
@@ -186,10 +228,13 @@ def send_config_email(email, client_config):
 def add_client_route():
     if request.method == 'POST':
         try:
-            name = request.form['name']
-            email = request.form['email'] if 'email' in request.form else None
-            data_limit = int(request.form['data_limit']) if request.form['data_limit'] != 'none' else None
-            expiry_date = request.form['expiry_date'] if request.form['expiry_date'] else None
+            name = request.form.get('name', '').strip()
+            email = request.form.get('email', '').strip() if 'email' in request.form else None
+            try:
+                data_limit = int(request.form.get('data_limit')) if request.form.get('data_limit') not in [None, '', 'none'] else None
+            except (ValueError, TypeError):
+                data_limit = None
+            expiry_date = request.form.get('expiry_date', '').strip() or None
             
             # Generate keys
             private_key, public_key = generate_keypair()
@@ -443,28 +488,32 @@ def search_clients():
 @login_required
 def server_config():
     config = get_server_config()
-    
     if request.method == 'POST':
-        # استفاده از get به جای [] برای جلوگیری از KeyError
+        # استفاده از get و کنترل مقدار عددی
+        try:
+            mtu = int(request.form.get('mtu', 1280))
+        except (ValueError, TypeError):
+            mtu = 1280
+        try:
+            keepalive = int(request.form.get('keepalive', 25))
+        except (ValueError, TypeError):
+            keepalive = 25
         updates = {
-            'endpoint': request.form.get('endpoint', ''),
-            'subnet': request.form.get('subnet', ''),
-            'dns_servers': request.form.get('dns_servers', ''),
-            'mtu': int(request.form.get('mtu', 1280)),
-            'keepalive': int(request.form.get('keepalive', 25))
+            'endpoint': request.form.get('endpoint', '').strip(),
+            'subnet': request.form.get('subnet', '').strip(),
+            'dns_servers': request.form.get('dns_servers', '').strip(),
+            'mtu': mtu,
+            'keepalive': keepalive
         }
         # بررسی اینکه هیچ فیلد ضروری خالی نباشد
         if not updates['endpoint'] or not updates['subnet']:
             flash('Endpoint و Subnet نباید خالی باشند.', 'error')
             return render_template('server_config.html', config=config)
-        # Update in database
         update_server_config(**updates)
-        # Apply changes to WireGuard
-        config = get_server_config()  # Get updated config with keys
+        config = get_server_config()
         apply_server_config(config)
         flash('Server configuration updated successfully!', 'success')
         return redirect(url_for('server_config'))
-    
     return render_template('server_config.html', config=config)
 
 # --- 4. تغییر رمز عبور ادمین از پنل ---
@@ -472,13 +521,15 @@ def server_config():
 @login_required
 def change_admin_password():
     if request.method == 'POST':
-        old = request.form['old_password']
-        new = request.form['new_password']
-        if old == ADMIN_PASSWORD:
+        old = request.form.get('old_password', '')
+        new = request.form.get('new_password', '')
+        if old != ADMIN_PASSWORD:
+            flash('Old password incorrect', 'error')
+        elif len(new) < 6:
+            flash('New password must be at least 6 characters.', 'error')
+        else:
             # در عمل باید رمز جدید را در فایل config یا دیتابیس ذخیره کنید
             flash('Password changed (demo only, not persistent)', 'success')
-        else:
-            flash('Old password incorrect', 'error')
     return render_template('change_password.html')
 
 # --- 5. تم تاریک/روشن (تنظیم در سشن) ---
@@ -722,9 +773,26 @@ def restore_config():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
-
-
+@app.route('/api/backup/send-telegram', methods=['POST'])
+@login_required
+def backup_send_telegram():
+    try:
+        with get_db_connection() as conn:
+            server_config = dict(conn.execute('SELECT * FROM server_config').fetchone())
+            clients = [dict(row) for row in conn.execute('SELECT * FROM clients').fetchall()]
+            backup = {
+                'server_config': server_config,
+                'clients': clients,
+                'timestamp': datetime.datetime.now().isoformat()
+            }
+            backup_json = json.dumps(backup, ensure_ascii=False, indent=2)
+            ok = send_backup_to_telegram(backup_json)
+            if ok:
+                return jsonify({'success': True})
+            else:
+                return jsonify({'success': False, 'error': 'Failed to send to Telegram'}), 500
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/reset', methods=['POST'])
 @login_required
@@ -818,14 +886,93 @@ def edit_client_endpoint(client_id):
     if not client:
         flash('Client not found!', 'error')
         return redirect(url_for('clients'))
-    new_endpoint = request.form.get('remote_endpoint')
-    if not new_endpoint:
-        flash('Remote Endpoint is required', 'error')
+    new_endpoint = request.form.get('remote_endpoint', '').strip()
+    if not new_endpoint or len(new_endpoint) < 3 or ':' not in new_endpoint:
+        flash('Remote Endpoint is required and must be in format host:port', 'error')
         return redirect(url_for('edit_client', client_id=client_id))
-    # فرض بر این است که ستون remote_endpoint در جدول clients وجود دارد
     update_client(client_id, remote_endpoint=new_endpoint)
     flash('Remote Endpoint updated successfully!', 'success')
     return redirect(url_for('edit_client', client_id=client_id))
+
+# 1. فعال/غیرفعال‌سازی سریع کلاینت از لیست
+@app.route('/clients/<int:client_id>/toggle-active', methods=['POST'])
+@login_required
+def toggle_client_active(client_id):
+    client = get_client(client_id)
+    if not client:
+        return jsonify({'success': False, 'message': 'Client not found!'})
+    new_status = not bool(client['is_active'])
+    update_client_status(client_id, new_status)
+    if new_status:
+        add_client_to_wireguard(client)
+    else:
+        remove_client_from_wireguard(client['public_key'])
+    return jsonify({'success': True, 'active': new_status})
+
+# 3. حذف گروهی کلاینت‌ها
+@app.route('/clients/bulk-delete', methods=['POST'])
+@login_required
+def bulk_delete_clients():
+    ids = request.form.getlist('client_ids')
+    deleted = 0
+    for cid in ids:
+        client = get_client(int(cid))
+        if client:
+            remove_client_from_wireguard(client['public_key'])
+            delete_client(int(cid))
+            deleted += 1
+    flash(f'{deleted} clients deleted.', 'success')
+    return redirect(url_for('clients'))
+
+# 4. جستجوی پیشرفته با فیلتر وضعیت
+@app.route('/clients/advanced-search')
+@login_required
+def advanced_search_clients():
+    q = request.args.get('q', '')
+    status = request.args.get('status', '')
+    online = request.args.get('online', '')
+    query = "SELECT * FROM clients WHERE 1=1"
+    params = []
+    if q:
+        query += " AND (name LIKE ? OR email LIKE ? OR assigned_ip LIKE ?)"
+        params += [f'%{q}%', f'%{q}%', f'%{q}%']
+    if status in ['active', 'inactive']:
+        query += " AND is_active = ?"
+        params.append(1 if status == 'active' else 0)
+    with get_db_connection() as conn:
+        clients = conn.execute(query + " ORDER BY name", params).fetchall()
+    # فیلتر آنلاین/آفلاین در سطح اپلیکیشن
+    client_status = get_client_status()
+    if online in ['online', 'offline']:
+        filtered = []
+        for c in clients:
+            is_online = client_status.get(c['public_key'], {}).get('online', False)
+            if (online == 'online' and is_online) or (online == 'offline' and not is_online):
+                filtered.append(c)
+        clients = filtered
+    return render_template('clients.html', clients=clients)
+
+# 5. API وضعیت یک کلاینت خاص
+@app.route('/api/client/<int:client_id>/status')
+@login_required
+def api_client_status(client_id):
+    client = get_client(client_id)
+    if not client:
+        return jsonify({'success': False, 'message': 'Client not found!'})
+    status = get_client_status().get(client['public_key'], {})
+    return jsonify({'success': True, 'status': status})
+
+# 7. مشاهده لاگ‌های مدیریتی
+@app.route('/admin/logs')
+@login_required
+def admin_logs():
+    logs = []
+    try:
+        with open('admin_actions.log', encoding='utf-8') as f:
+            logs = f.readlines()[-200:]
+    except Exception:
+        logs = []
+    return render_template('admin_logs.html', logs=logs)
 
 if __name__ == '__main__':
     setup_scheduled_tasks()
