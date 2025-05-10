@@ -30,27 +30,6 @@ app.config['SECRET_KEY'] = SECRET_KEY
 from apscheduler.schedulers.background import BackgroundScheduler
 from functools import wraps
 from flask import session, redirect, url_for
-import requests
-
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', 'YOUR_BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', 'YOUR_CHAT_ID')
-
-def send_backup_to_telegram(backup_json):
-    """ارسال بکاپ به تلگرام به صورت فایل"""
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument"
-    files = {
-        'document': ('backup.json', io.BytesIO(backup_json.encode('utf-8')))
-    }
-    data = {
-        'chat_id': TELEGRAM_CHAT_ID,
-        'caption': 'iPWG Backup'
-    }
-    try:
-        response = requests.post(url, data=data, files=files, timeout=20)
-        return response.ok
-    except Exception as e:
-        print(f"Telegram send error: {e}")
-        return False
 
 # Initialize database using an app context instead of before_first_request
 def initialize_database():
@@ -772,27 +751,6 @@ def restore_config():
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-@app.route('/api/backup/send-telegram', methods=['POST'])
-@login_required
-def backup_send_telegram():
-    try:
-        with get_db_connection() as conn:
-            server_config = dict(conn.execute('SELECT * FROM server_config').fetchone())
-            clients = [dict(row) for row in conn.execute('SELECT * FROM clients').fetchall()]
-            backup = {
-                'server_config': server_config,
-                'clients': clients,
-                'timestamp': datetime.datetime.now().isoformat()
-            }
-            backup_json = json.dumps(backup, ensure_ascii=False, indent=2)
-            ok = send_backup_to_telegram(backup_json)
-            if ok:
-                return jsonify({'success': True})
-            else:
-                return jsonify({'success': False, 'error': 'Failed to send to Telegram'}), 500
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/reset', methods=['POST'])
 @login_required
