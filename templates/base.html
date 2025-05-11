@@ -2,16 +2,50 @@
 <html lang="fa" {% if session.theme == 'dark' %}class="dark"{% endif %}>
 <head>
     <!-- ...existing code... -->
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --border-color: #dddddd;
+        }
+        body.dark-mode {
+            --bg-primary: #181a1b;
+            --bg-secondary: #23272a;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b0b0b0;
+            --border-color: #33363a;
+        }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+        /* ...existing code... */
+    </style>
     {% if session.theme == 'dark' %}
     <link rel="stylesheet" href="{{ url_for('static', filename='dark.css') }}">
     {% else %}
     <link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}">
     {% endif %}
 </head>
-<body>
+<body{% if session.theme == 'dark' %} class="dark-mode"{% endif %}>
     <a href="{{ url_for('set_theme', theme='dark') }}">تم تاریک</a> | 
     <a href="{{ url_for('set_theme', theme='light') }}">تم روشن</a>
     <!-- ...existing code... -->
     {% block content %}{% endblock %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Highlight active theme link
+        var links = document.querySelectorAll('a[href*="theme="]');
+        links.forEach(function(link) {
+            if ((document.body.classList.contains('dark-mode') && link.href.includes('dark')) ||
+                (!document.body.classList.contains('dark-mode') && link.href.includes('light'))) {
+                link.style.fontWeight = 'bold';
+            }
+        });
+    });
+    </script>
 </body>
 </html>

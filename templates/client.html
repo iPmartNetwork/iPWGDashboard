@@ -5,31 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iPWGD - Clients</title>
     <style>
-        /* Removed dark mode styles */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e8e8e8;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --border-color: #dddddd;
+            --accent-color: #eeeeee;
+            --success: #4caf50;
+            --danger: #f44336;
+            --info: #2196f3;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode {
+            --bg-primary: #181a1b;
+            --bg-secondary: #23272a;
+            --bg-tertiary: #222326;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b0b0b0;
+            --border-color: #33363a;
+            --accent-color: #23272a;
+            --success: #43d675;
+            --danger: #ff5c5c;
+            --info: #42a5f5;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --hover-bg: rgba(255,255,255,0.03);
+        }
         body {
-            background-color: #ffffff; /* Light background */
-            color: #222222; /* Dark text */
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s, color 0.3s;
         }
         .sidebar {
-            background-color: #f5f5f5; /* Light sidebar */
-            border-right: 1px solid #dddddd;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
         }
         .main-content {
-            background-color: #ffffff; /* Light content area */
+            background-color: var(--bg-primary);
         }
         .btn {
-            background-color: #eeeeee; /* Light button */
-            color: #222222;
+            background-color: var(--accent-color);
+            color: var(--text-primary);
         }
         .card {
-            background-color: #f5f5f5; /* Light card */
-            border: 1px solid #dddddd;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
         }
         .footer {
-            background-color: #f5f5f5; /* Light footer */
-            color: #555555;
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
         }
         
         /* Reset & Base Styles */
@@ -49,7 +77,7 @@
         .sidebar {
             width: 250px;
             padding: 30px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
             z-index: 10;
             transition: all 0.3s ease;
         }
@@ -74,7 +102,7 @@
             display: flex;
             align-items: center;
             padding: 12px 25px;
-            color: #222222;
+            color: var(--text-primary);
             text-decoration: none;
             transition: all 0.2s ease;
             border-radius: 0 20px 20px 0;
@@ -82,19 +110,19 @@
         }
         
         .nav-link:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--hover-bg);
         }
         
         .nav-link.active {
-            background-color: rgba(0, 0, 0, 0.05);
-            border-left: 4px solid #2196f3;
+            background-color: var(--hover-bg);
+            border-left: 4px solid var(--info);
             font-weight: 500;
         }
         
         /* Brand */
         .brand {
             padding: 0 25px 20px;
-            border-bottom: 1px solid #dddddd;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 20px;
         }
         
@@ -111,7 +139,7 @@
             align-items: center;
             margin-bottom: 30px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #dddddd;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .heading {
@@ -121,8 +149,8 @@
         
         /* Buttons */
         .btn {
-            background-color: #eeeeee;
-            color: #222222;
+            background-color: var(--accent-color);
+            color: var(--text-primary);
             border: none;
             padding: 10px 20px;
             border-radius: 6px;
@@ -138,17 +166,17 @@
         }
         
         .btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--hover-bg);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
         .btn-success {
-            background-color: #4caf50;
+            background-color: var(--success);
         }
         
         .btn-danger {
-            background-color: #f44336;
+            background-color: var(--danger);
         }
         
         .btn-sm {
@@ -159,13 +187,13 @@
         
         /* Cards */
         .card {
-            background-color: #f5f5f5;
+            background-color: var(--bg-secondary);
             border-radius: 10px;
             padding: 25px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
             transition: box-shadow 0.2s ease, transform 0.2s ease;
-            border: 1px solid #dddddd;
+            border: 1px solid var(--border-color);
         }
         
         .card:hover {
@@ -188,7 +216,7 @@
             left: 0;
             width: 40px;
             height: 3px;
-            background-color: #2196f3;
+            background-color: var(--info);
             border-radius: 3px;
         }
         
@@ -207,15 +235,15 @@
         }
         
         th {
-            background-color: #e8e8e8;
+            background-color: var(--bg-tertiary);
             font-weight: 500;
-            color: #555555;
+            color: var(--text-secondary);
             position: sticky;
             top: 0;
         }
         
         tr {
-            border-bottom: 1px solid #dddddd;
+            border-bottom: 1px solid var(--border-color);
             transition: background-color 0.2s ease;
         }
         
@@ -224,7 +252,7 @@
         }
         
         tr:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--hover-bg);
         }
         
         .status {
@@ -236,12 +264,12 @@
         }
         
         .status.online {
-            background-color: #4caf50;
+            background-color: var(--success);
             box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
         }
         
         .status.offline {
-            background-color: #f44336;
+            background-color: var(--danger);
             box-shadow: 0 0 5px rgba(244, 67, 54, 0.5);
         }
         
@@ -269,7 +297,7 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #555555;
+            color: var(--text-secondary);
         }
         
         .search-input {
@@ -297,7 +325,7 @@
         }
         
         .modal-content {
-            background-color: #f5f5f5;
+            background-color: var(--bg-secondary);
             border-radius: 10px;
             width: 90%;
             max-width: 600px;
@@ -306,7 +334,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             transform: translateY(0);
             transition: transform 0.3s ease;
-            border: 1px solid #dddddd;
+            border: 1px solid var(--border-color);
         }
         
         .modal.active .modal-content {
@@ -319,17 +347,17 @@
             right: 20px;
             font-size: 24px;
             cursor: pointer;
-            color: #555555;
+            color: var(--text-secondary);
             transition: color 0.2s ease;
         }
         
         .close:hover {
-            color: #f44336;
+            color: var(--danger);
         }
         
         /* QR Code Placeholder */
         .qr-placeholder {
-            background-color: #e8e8e8;
+            background-color: var(--bg-tertiary);
             width: 200px;
             height: 200px;
             margin: 20px auto;
@@ -337,7 +365,7 @@
             justify-content: center;
             align-items: center;
             border-radius: 10px;
-            border: 1px dashed #dddddd;
+            border: 1px dashed var(--border-color);
         }
         
         .qr-image {
@@ -359,12 +387,12 @@
         }
         
         .flash-message.success {
-            background-color: #4caf50;
+            background-color: var(--success);
             color: white;
         }
         
         .flash-message.error {
-            background-color: #f44336;
+            background-color: var(--danger);
             color: white;
         }
         
@@ -393,9 +421,9 @@
             margin-top: 40px;
             text-align: center;
             padding: 20px 0;
-            color: #555555;
+            color: var(--text-secondary);
             font-size: 14px;
-            border-top: 1px solid #dddddd;
+            border-top: 1px solid var(--border-color);
         }
         
         /* Responsive Adjustments */
@@ -407,7 +435,7 @@
             .sidebar {
                 width: 100%;
                 border-right: none;
-                border-bottom: 1px solid #dddddd;
+                border-bottom: 1px solid var(--border-color);
                 padding: 15px 0;
             }
             
@@ -430,7 +458,7 @@
         }
     </style>
 </head>
-<body>
+<body{% if session.theme == 'dark' %} class="dark-mode"{% endif %}>
     <div class="container">
         <aside class="sidebar">
             <div class="brand">
@@ -457,6 +485,12 @@
                     <a href="/settings" class="nav-link">Settings</a>
                 </li>
             </ul>
+            <div style="padding: 20px;">
+                <button id="toggle-theme-btn" class="btn" type="button">
+                    <span id="theme-icon">{% if session.theme == 'dark' %}🌙{% else %}☀️{% endif %}</span>
+                    <span id="theme-label">{% if session.theme == 'dark' %}Dark{% else %}Light{% endif %} Mode</span>
+                </button>
+            </div>
         </aside>
         
         <main class="main-content">
@@ -659,6 +693,21 @@
             
             if (searchInput) searchInput.addEventListener('input', filterClients);
             if (statusFilter) statusFilter.addEventListener('change', filterClients);
+        });
+        
+        // Theme toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('toggle-theme-btn');
+            if (btn) {
+                btn.onclick = function() {
+                    var isDark = document.body.classList.toggle('dark-mode');
+                    fetch('/theme/' + (isDark ? 'dark' : 'light'), {method: 'GET'})
+                        .then(() => {
+                            document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+                            document.getElementById('theme-label').textContent = isDark ? 'Dark' : 'Light' + ' Mode';
+                        });
+                };
+            }
         });
     </script>
 </body>

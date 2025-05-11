@@ -5,39 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iPWGD - Logs</title>
     <style>
-        /* Removed dark mode styles */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e8e8e8;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --border-color: #dddddd;
+            --accent-color: #eeeeee;
+            --success: #4caf50;
+            --danger: #f44336;
+            --info: #2196f3;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode {
+            --bg-primary: #181a1b;
+            --bg-secondary: #23272a;
+            --bg-tertiary: #222326;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b0b0b0;
+            --border-color: #33363a;
+            --accent-color: #23272a;
+            --success: #43d675;
+            --danger: #ff5c5c;
+            --info: #42a5f5;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --hover-bg: rgba(255,255,255,0.03);
+        }
         body {
-            background-color: #ffffff; /* Light background */
-            color: #222222; /* Dark text */
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s, color 0.3s;
         }
         .container {
             display: flex;
             min-height: 100vh;
         }
         .sidebar {
-            background-color: #f5f5f5; /* Light sidebar */
-            border-right: 1px solid #dddddd;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
         }
         .main-content {
-            background-color: #ffffff; /* Light content area */
+            background-color: var(--bg-primary);
         }
         .card {
-            background-color: #f5f5f5; /* Light card */
-            border: 1px solid #dddddd;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
         }
         .logs-container {
-            background-color: #e8e8e8; /* Light logs container */
-            color: #555555; /* Darker text for logs */
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
         }
         .btn {
-            background-color: #eeeeee; /* Light button */
-            color: #222222;
+            background-color: var(--accent-color);
+            color: var(--text-primary);
         }
         .footer {
-            background-color: #f5f5f5; /* Light footer */
-            color: #555555;
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
         }
         
         /* Reset & Base Styles */
@@ -532,9 +560,18 @@
 }
     </style>
 </head>
-<body>
+<body{% if session.theme == 'dark' %} class="dark-mode"{% endif %}>
     <div class="container">
         <!-- Include your sidebar -->
+        <aside class="sidebar">
+            <!-- ...existing code... -->
+            <div style="padding: 20px;">
+                <button id="toggle-theme-btn" class="btn" type="button">
+                    <span id="theme-icon">{% if session.theme == 'dark' %}🌙{% else %}☀️{% endif %}</span>
+                    <span id="theme-label">{% if session.theme == 'dark' %}Dark{% else %}Light{% endif %} Mode</span>
+                </button>
+            </div>
+        </aside>
         <main class="main-content">
             <div class="header">
                 <h1 class="heading">System Logs</h1>
@@ -557,6 +594,22 @@
         function refreshLogs() {
             location.reload();
         }
+
+        // Theme toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('toggle-theme-btn');
+            if (btn) {
+                btn.onclick = function() {
+                    var isDark = document.body.classList.toggle('dark-mode');
+                    document.documentElement.classList.toggle('dark-mode', isDark);
+                    fetch('/theme/' + (isDark ? 'dark' : 'light'), {method: 'GET'})
+                        .then(() => {
+                            document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+                            document.getElementById('theme-label').textContent = isDark ? 'Dark' : 'Light' + ' Mode';
+                        });
+                };
+            }
+        });
     </script>
 </body>
 </html>

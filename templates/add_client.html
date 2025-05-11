@@ -21,6 +21,21 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             --hover-bg: rgba(0, 0, 0, 0.05);
         }
+        body.dark-mode {
+            --bg-primary: #181a1b;
+            --bg-secondary: #23272a;
+            --bg-tertiary: #222326;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b0b0b0;
+            --border-color: #33363a;
+            --accent-color: #23272a;
+            --success: #43d675;
+            --danger: #ff5c5c;
+            --warning: #ffb300;
+            --info: #42a5f5;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --hover-bg: rgba(255,255,255,0.03);
+        }
 
         /* Reset & Base Styles */
         * {
@@ -298,7 +313,7 @@
         }
     </style>
 </head>
-<body>
+<body{% if session.theme == 'dark' %} class="dark-mode"{% endif %}>
     <div class="container">
         <aside class="sidebar">
             <div class="brand">
@@ -325,6 +340,12 @@
                     <a href="/settings" class="nav-link">Settings</a>
                 </li>
             </ul>
+            <div style="padding: 20px;">
+                <button id="toggle-theme-btn" class="btn" type="button">
+                    <span id="theme-icon">{% if session.theme == 'dark' %}🌙{% else %}☀️{% endif %}</span>
+                    <span id="theme-label">{% if session.theme == 'dark' %}Dark{% else %}Light{% endif %} Mode</span>
+                </button>
+            </div>
         </aside>
         
         <main class="main-content">
@@ -424,6 +445,21 @@
                     }, 500);
                 }, 5000);
             });
+        });
+
+        // Theme toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('toggle-theme-btn');
+            if (btn) {
+                btn.onclick = function() {
+                    var isDark = document.body.classList.toggle('dark-mode');
+                    fetch('/theme/' + (isDark ? 'dark' : 'light'), {method: 'GET'})
+                        .then(() => {
+                            document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+                            document.getElementById('theme-label').textContent = isDark ? 'Dark' : 'Light' + ' Mode';
+                        });
+                };
+            }
         });
     </script>
 </body>
