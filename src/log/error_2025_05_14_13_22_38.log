@@ -1,9 +1,0 @@
-[2025-05-14 13:22:38 +0000] [13377] [INFO] Starting gunicorn 23.0.0
-[2025-05-14 13:22:38 +0000] [13377] [INFO] Listening at: http://0.0.0.0:10086 (13377)
-[2025-05-14 13:22:38 +0000] [13377] [INFO] Using worker: gthread
-[2025-05-14 13:22:38 +0000] [13378] [INFO] Booting worker with pid: 13378
-[WGDashboard] Background Thread #1 Started
-[WGDashboard] Background Thread #2 Started
-[2025-05-14 13:22:45 +0000] [13377] [INFO] Handling signal: term
-[2025-05-14 13:22:46 +0000] [13378] [INFO] Worker exiting (pid: 13378)
-[2025-05-14 13:22:46 +0000] [13377] [INFO] Shutting down: Master

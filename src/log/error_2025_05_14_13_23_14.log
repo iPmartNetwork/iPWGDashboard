@@ -1,6 +1,0 @@
-[2025-05-14 13:23:14 +0000] [943] [INFO] Starting gunicorn 23.0.0
-[2025-05-14 13:23:14 +0000] [943] [INFO] Listening at: http://0.0.0.0:10086 (943)
-[2025-05-14 13:23:14 +0000] [943] [INFO] Using worker: gthread
-[2025-05-14 13:23:14 +0000] [944] [INFO] Booting worker with pid: 944
-[WGDashboard] Background Thread #1 Started
-[WGDashboard] Background Thread #2 Started
