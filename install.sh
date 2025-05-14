@@ -677,7 +677,7 @@ cp "$SERVICE_FILE" /etc/systemd/system/wg-dashboard.service
 # Set permissions
 chmod 664 /etc/systemd/system/wg-dashboard.service
 
-# Enable and start WGDashboard service
+# Enable and start iPWGDashboard service
 systemctl enable wg-dashboard.service --quiet
 systemctl restart wg-dashboard.service
 
