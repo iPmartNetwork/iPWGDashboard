@@ -5,11 +5,11 @@ ConditionPathIsDirectory=/etc/wireguard
 
 [Service]
 Type=forking
-PIDFile=/etc/Easy-WGDashboard/wgdashboard/src/gunicorn.pid
-WorkingDirectory=/etc/Easy-WGDashboard/wgdashboard/src
-ExecStart=/etc/Easy-WGDashboard/wgdashboard/src/wgd.sh start
-ExecStop=/etc/Easy-WGDashboard/wgdashboard/src/wgd.sh stop
-ExecReload=/etc/Easy-WGDashboard/wgdashboard/src/wgd.sh restart
+PIDFile=/etc/Easy-WGDashboard/iPWGDashboard/src/gunicorn.pid
+WorkingDirectory=/etc/Easy-WGDashboard/iPWGDashboard/src
+ExecStart=/etc/Easy-WGDashboard/iPWGDashboard/src/wgd.sh start
+ExecStop=/etc/Easy-WGDashboard/iPWGDashboard/src/wgd.sh stop
+ExecReload=/etc/Easy-WGDashboard/iPWGDashboard/src/wgd.sh restart
 TimeoutSec=120
 PrivateTmp=yes
 Restart=always
