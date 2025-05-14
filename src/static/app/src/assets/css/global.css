@@ -1,0 +1,97 @@
+/* Global application styles */
+body {
+    overflow-x: hidden; /* Prevent horizontal scrollbar from main layout */
+    background-color: var(--bs-body-bg); /* Ensure body background matches theme */
+    color: var(--bs-body-color); /* Ensure body text color matches theme */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* Modern font stack */
+    line-height: 1.6; /* Improved readability */
+    -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit */
+    -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+}
+
+.main-wrapper {
+    background-color: var(--bs-secondary-bg); /* Or var(--bs-body-bg) if preferred */
+    min-height: 100vh; /* Ensure wrapper takes at least full viewport height */
+    display: flex; /* Added for better control over direct children if needed */
+    flex-direction: column; /* Added for better control over direct children if needed */
+}
+
+.main-content {
+	height: 100vh; /* Full viewport height for the main content area */
+    padding-bottom: 70px !important; /* Ensure space for fixed navbar on mobile */
+    flex-grow: 1; /* Allow main content to grow and fill available space in main-wrapper */
+    overflow-y: auto; /* Ensure scrolling within main-content if it overflows */
+}
+
+@supports (height: 100dvh) {
+    .main-content {
+        height: 100dvh;
+    }
+    .main-wrapper {
+        min-height: 100dvh;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .main-content {
+        /* Adjust height if there's a fixed bottom mobile nav, for example */
+        /* height: calc(100vh - 56px); */
+        /* padding-top: 56px; */ /* Add padding if navbar is fixed-top on mobile */
+    }
+    .sidebar.collapse:not(.show) {
+        display: none !important; /* Ensure collapsed sidebar is hidden on mobile */
+    }
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1045; /* Ensure sidebar is above most content, adjust if needed (Bootstrap modal z-index is 1050+) */
+        padding: 56px 0 0; /* Adjust if you have a fixed top navbar for toggler, e.g., 56px for Bootstrap default navbar height */
+        box-shadow: 0.125rem 0 0.25rem rgba(0, 0, 0, 0.075); /* Softer, more modern shadow */
+        width: 280px;
+        transform: translateX(-100%);
+        transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
+        background-color: var(--bs-body-bg); /* Ensure sidebar has a background */
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+}
+
+
+/* Router Transition */
+.fade-router-enter-active,
+.fade-router-leave-active {
+  transition: opacity 0.2s ease-in-out;
+}
+.fade-router-enter-from,
+.fade-router-leave-to {
+  opacity: 0;
+}
+
+/* Message Transition */
+.message-transition-enter-active,
+.message-transition-leave-active {
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Elastic transition */
+}
+.message-transition-enter-from,
+.message-transition-leave-to {
+  opacity: 0;
+  transform: translateX(100px) scale(0.8);
+}
+.message-transition-move {
+  transition: transform 0.3s ease;
+}
+
+/* Common page header button style */
+.page-header .btn-light {
+    border-color: var(--bs-border-color-translucent) !important;
+}
+.page-header .btn-light:hover {
+    border-color: var(--bs-primary) !important;
+    background-color: var(--bs-primary-bg-subtle) !important;
+    color: var(--bs-primary) !important;
+}
