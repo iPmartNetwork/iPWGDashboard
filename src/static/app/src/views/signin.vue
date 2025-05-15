@@ -115,7 +115,7 @@ export default {
 					<LocaleText t="Welcome to"></LocaleText>
 				</h4>
 				<span class="dashboardLogo display-5 d-block text-center mb-2">
-					<strong>WGDashboard</strong>
+					<strong>iPWGDashboard</strong>
 				</span>
 				<form @submit="(e) => {e.preventDefault(); this.auth();}"
 				      class="mt-3"
