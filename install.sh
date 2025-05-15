@@ -1,4 +1,17 @@
 #!/bin/bash
+# Colors and styles
+RED='\e[1;31m'
+GREEN='\e[1;32m'
+YELLOW='\e[1;33m'
+BLUE='\e[1;34m'
+CYAN='\e[1;36m'
+NC='\e[0m' # No Color
+
+# Separator line
+print_separator() {
+    echo -e "${CYAN}────────────────────────────────────────────────────────────${NC}"
+}
+
 # Function to check if a package is installed
 check_package_installed() {
     if ! command -v "$1" &> /dev/null; then
@@ -21,31 +34,34 @@ validate_port() {
     fi
 }
 
-# Check if curl is installed
+# Use color and icon for package installation messages
 if ! check_dpkg_package_installed curl; then
-    echo "Installing curl..."
+    print_separator
+    echo -e "${YELLOW}⚠️  Installing curl ...${NC}"
     apt update -y 
     apt install -y curl >/dev/null 2>&1
+    echo -e "${GREEN}✔ curl installed.${NC}"
 fi
-# Check if wget is installed
 if ! check_dpkg_package_installed wget; then
-    echo "Installing wget..."
+    print_separator
+    echo -e "${YELLOW}⚠️  Installing wget ...${NC}"
     apt update -y 
     apt install -y wget >/dev/null 2>&1
+    echo -e "${GREEN}✔ wget installed.${NC}"
 fi
-
-# Check if git is installed
 if ! check_dpkg_package_installed git; then
-    echo "Installing git..."
+    print_separator
+    echo -e "${YELLOW}⚠️  Installing git ...${NC}"
     apt update -y 
     apt install -y git >/dev/null 2>&1
+    echo -e "${GREEN}✔ git installed.${NC}"
 fi
-
-# Check if git is installed
 if ! check_dpkg_package_installed sudo; then
-    echo "Installing sudo..."
+    print_separator
+    echo -e "${YELLOW}⚠️  Installing sudo ...${NC}"
     apt update -y 
     apt install -y sudo >/dev/null 2>&1
+    echo -e "${GREEN}✔ sudo installed.${NC}"
 fi
 # Clear screen
 clear
@@ -53,11 +69,11 @@ interface=$(ip route list default | awk '$1 == "default" {print $5}')
 # Display ASCII art and introduction
 echo "                                  WireGuard Panel & Server"
 echo ""
-echo -e "\e[1;31mWARNING ! Install only in Ubuntu 20.04, Ubuntu 22.04, Ubuntu 24.02 & Debian 11 & 12 system ONLY\e[0m"
+echo -e "\e[1;31mWARNING! Install only on Ubuntu 20.04, Ubuntu 22.04, Ubuntu 24.02 & Debian 11 & 12 systems ONLY\e[0m"
 echo -e "\e[32mRECOMMENDED ==> Ubuntu 22.04 \e[0m"
 echo ""
 echo "The following software will be installed on your system:"
-echo "   - Wire Guard Server"
+echo "   - WireGuard Server"
 echo "   - WireGuard-Tools"
 echo "   - WGDashboard by donaldzou"
 echo "   - Gunicorn WSGI Server"
@@ -100,7 +116,7 @@ fi
 
 printf "\n\n"
 # Prompt the user to continue
-read -p "Would you like to continue now ? [y/n]: " choice
+read -p "Would you like to continue now? [y/n]: " choice
 if [[ "$choice" =~ ^[Yy]$ ]]; then
 
 # Prompt the user to enter hostname until a valid one is provided
@@ -156,13 +172,13 @@ while true; do
     fi
 done
    # Prompt for other installation details with default values
-    read -p "Please Specify new DNS [eg. 8.8.8.8, 1.1.1.1]: " dns
+    read -p "Please specify new DNS [eg. 8.8.8.8, 1.1.1.1]: " dns
     dns="${dns:-1.1.1.1,8.8.8.8}"  # Default DNS if user hits Enter
     #read -p "Please enter Wireguard Port [eg. 51820]: " wg_port
     #wg_port="${wg_port:-51820}"  # Default port if user hits Enter
     # Loop to ensure a valid port is entered
         while true; do
-            read -p "Please enter Wireguard Port [eg. 51820]: " wg_port
+            read -p "Please enter WireGuard Port [eg. 51820]: " wg_port
             wg_port="${wg_port:-51820}"  # Default port if user hits Enter
             if validate_port "$wg_port"; then
                 break  # Exit the loop if the port is valid
@@ -341,8 +357,7 @@ validate_input() {
 }
 # Main script
 # Prompt for interface name
-read -p "Enter the internet interface OR (press Enter for detected: $interface)" net_interface
-#read -p "Enter the internet interface (detected is: $interface)" interface
+read -p "Enter the internet interface OR (press Enter for detected: $interface): " net_interface
 interface="${net_interface:-$interface}"  # Default IPs if user hits Enter
 echo ""
 # Check if IPv6 is available
@@ -713,12 +728,12 @@ if [ "$wg_status" = "active" ] && [ "$dashboard_status" = "active" ]; then
     server_ip=$(curl -s4 ifconfig.me)
     # Display success message in green font
     echo -e "\e[32mGreat! Installation was successful!"
-    echo "You can access Wireguard Dashboard now:"
+    echo "You can access WireGuard Dashboard now:"
     echo 'URL: http://'"$server_ip:$dashboard_port"
     echo "Username: $username"
     echo "Password: ***(hidden)***"
     echo ""
-    echo "System will reboot now and after that Go ahead and create your first peers"
+    echo "System will reboot now and after that you can create your first peers."
     echo -e "\e[0m" # Reset font color
 # Reload systemd daemon
 #systemctl daemon-reload
