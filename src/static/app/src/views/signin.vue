@@ -104,11 +104,17 @@ export default {
 	     style="overflow-y: scroll"
 	     :data-bs-theme="this.theme">
 		<div class="login-box m-auto" >
-			<div class="m-auto signInContainer" style="width: 700px;">
-				<h4 class="mb-0 text-body">
+			<div class="m-auto signInContainer position-relative shadow-lg rounded-4 p-5 bg-body-tertiary" style="max-width: 420px; min-width: 340px;">
+				<!-- Add a small animated glowing logo above the form -->
+				<div class="d-flex justify-content-center mb-3">
+					<div class="glow-logo rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 70px; height: 70px; background: #222;">
+						<img src="/static/app/public/img/Logo-1-128x128.png" alt="logo" style="width: 48px; height: 48px; filter: drop-shadow(0 0 8px #0ff);">
+					</div>
+				</div>
+				<h4 class="mb-0 text-body text-center">
 					<LocaleText t="Welcome to"></LocaleText>
 				</h4>
-				<span class="dashboardLogo display-3">
+				<span class="dashboardLogo display-5 d-block text-center mb-2">
 					<strong>WGDashboard</strong>
 				</span>
 				<form @submit="(e) => {e.preventDefault(); this.auth();}"
@@ -208,6 +214,20 @@ export default {
 		width: auto !important;
 	}
 }
-
-
+.signInContainer {
+	background: var(--bs-body-bg, #fff);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+	border-radius: 2rem;
+	padding: 2.5rem 2rem 2rem 2rem;
+	max-width: 420px;
+	min-width: 340px;
+}
+.glow-logo {
+	box-shadow: 0 0 16px 4px #0ff, 0 0 32px 8px #0ff44c44;
+	animation: glowPulse 2s infinite alternate;
+}
+@keyframes glowPulse {
+	0% { box-shadow: 0 0 16px 4px #0ff, 0 0 32px 8px #0ff44c44; }
+	100% { box-shadow: 0 0 32px 8px #0ff, 0 0 48px 16px #0ff44c44; }
+}
 </style>
