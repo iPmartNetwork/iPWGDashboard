@@ -735,3 +735,50 @@ else
     exit 0
 fi
 #working
+# Enhanced colorful and stylish welcome section
+clear
+print_separator
+
+# Colorful ASCII Art Title
+cat <<'EOF'
+${CYAN} __        __ _                            _   _                 _   
+  ____________________________________________________________________________
+      ____                             _     _
+ ,   /    )                           /|   /                                 
+-----/____/---_--_----__---)__--_/_---/-| -/-----__--_/_-----------__---)__--
+ /   /        / /  ) /   ) /   ) /    /  | /    /___) /   | /| /  /   ) /   ) 
+_/___/________/_/__/_(___(_/_____(_ __/___|/____(___ _(_ __|/_|/__(___/_/____
+
+${NC}
+EOF
+
+print_separator
+
+# Stylish warning and info messages
+
+# ...existing code...
+echo -e "${RED}WARNING! Install only on Ubuntu 20.04, Ubuntu 22.04, Ubuntu 24.02 & Debian 11 & 12 systems ONLY${NC}"
+echo -e "${GREEN}RECOMMENDED ==> Ubuntu 22.04${NC}"
+print_separator
+
+echo -e "${YELLOW}The following software will be installed on your system:${NC}"
+echo -e "${BLUE}   - WireGuard Server\n   - WireGuard-Tools\n   - WGDashboard by donaldzou\n   - Gunicorn WSGI Server\n   - Python3-pip\n   - Git\n   - UFW - firewall\n   - inotifywait${NC}"
+print_separator
+# ...existing code...
+# Add more color to final success and error messages
+# ...existing code...
+if [ "$wg_status" = "active" ] && [ "$dashboard_status" = "active" ]; then
+    server_ip=$(curl -s4 ifconfig.me)
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${GREEN}✔ Great! Installation was successful!${NC}"
+    echo -e "${CYAN}You can access WireGuard Dashboard now:${NC}"
+    echo -e "${YELLOW}URL: http://$server_ip:$dashboard_port${NC}"
+    echo -e "${BLUE}Username: $username${NC}"
+    echo -e "${BLUE}Password: ***(hidden)***${NC}"
+    echo -e "${CYAN}System will reboot now and after that you can create your first peers.${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    reboot
+else
+    echo -e "${RED}✖ Error: Installation failed. Please check the services and try again.${NC}"
+fi
+# ...existing code...
