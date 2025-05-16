@@ -812,7 +812,7 @@ install_ssl_certificate() {
     apt install -y certbot python3-certbot-nginx >/dev/null 2>&1
 
     echo "Obtaining SSL certificate for domain: $domain..."
-    certbot --nginx --non-interactive --agree-tos --email "$email" -d "$domain"
+    certbot certonly --nginx --non-interactive --agree-tos --email "$email" -d "$domain"
 
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}SSL certificate successfully obtained for $domain.${NC}"
