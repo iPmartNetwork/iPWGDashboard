@@ -52,6 +52,17 @@ install_nginx() {
 
 # Function to update Python libraries required for Certbot
 update_certbot_dependencies() {
+    echo "Ensuring pip is installed and functional..."
+    if ! command -v pip &> /dev/null; then
+        echo "pip is not installed. Installing pip..."
+        apt update -y >/dev/null 2>&1
+        apt install -y python3-pip >/dev/null 2>&1
+        if ! command -v pip &> /dev/null; then
+            echo -e "${RED}Failed to install pip. Please check your Python environment.${NC}"
+            exit 1
+        fi
+    fi
+
     echo "Updating Python libraries required for Certbot..."
     pip install --upgrade urllib3 requests_toolbelt >/dev/null 2>&1
     if [ $? -eq 0 ]; then
