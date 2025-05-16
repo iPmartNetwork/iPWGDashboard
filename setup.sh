@@ -802,6 +802,16 @@ else
 fi
 # ...existing code...
 
+# Function to install Nginx
+install_nginx() {
+    echo "Installing Nginx..."
+    apt update -y >/dev/null 2>&1
+    apt install -y nginx >/dev/null 2>&1
+    systemctl enable nginx >/dev/null 2>&1
+    systemctl start nginx >/dev/null 2>&1
+    echo -e "${GREEN}Nginx has been installed and started.${NC}"
+}
+
 # Function to install Certbot and obtain SSL certificates
 install_ssl_certificate() {
     local domain="$1"
@@ -868,6 +878,9 @@ EOF
     nginx -t && systemctl reload nginx
     echo -e "${GREEN}Nginx has been configured for HTTPS.${NC}"
 }
+
+# Ensure Nginx is installed
+install_nginx
 
 # Prompt for SSL certificate setup
 read -p "Would you like to set up SSL for your domain? [y/n]: " ssl_choice
