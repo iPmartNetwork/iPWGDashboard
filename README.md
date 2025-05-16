@@ -37,6 +37,7 @@
 
 ```bash
 apt update && apt install git -y && git clone https://github.com/iPmartNetwork/iPWGDashboard && cd iPWGDashboard && chmod +x install.sh && ./install.sh
+
 ```
 
 ---
