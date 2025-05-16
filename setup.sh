@@ -151,8 +151,18 @@ restart_nginx() {
     echo "Nginx restarted."
 }
 
+# Function to allow port 80 in the firewall
+allow_port_80_firewall() {
+    echo "Allowing inbound traffic on port 80..."
+    ufw allow 80/tcp >/dev/null 2>&1
+    echo "Port 80 has been allowed in the firewall."
+}
+
 # Ensure Nginx is installed
 install_nginx
+
+# Allow port 80 in the firewall
+allow_port_80_firewall
 
 # Stop processes using port 80 before running Certbot
 stop_port_80_process
