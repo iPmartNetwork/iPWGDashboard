@@ -815,24 +815,22 @@ install_nginx() {
 # Function to install Certbot and obtain SSL certificates
 install_ssl_certificate() {
     local domain="$1"
-    local email="$2"
 
     echo "Installing Certbot for SSL certificate generation..."
     apt update -y >/dev/null 2>&1
-    apt install -y certbot python3-certbot-nginx >/dev/null 2>&1
+    apt install -y certbot >/dev/null 2>&1
 
     echo "Obtaining SSL certificate for domain: $domain..."
-    certbot certonly --nginx --non-interactive --agree-tos --email "$email" -d "$domain"
+    certbot certonly --standalone --agree-tos --register-unsafely-without-email -d "$domain"
 
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}SSL certificate successfully obtained for $domain.${NC}"
         # Write configuration to certbot.ini
         cat <<EOF > /etc/letsencrypt/certbot.ini
 # Certbot configuration
-email = $email
 domains = $domain
 rsa-key-size = 2048
-authenticator = nginx
+authenticator = standalone
 EOF
         echo -e "${GREEN}Configuration written to /etc/letsencrypt/certbot.ini.${NC}"
     else
@@ -894,15 +892,6 @@ if [[ "$ssl_choice" =~ ^[Yy]$ ]]; then
         fi
     done
 
-    while true; do
-        read -p "Enter your email address for SSL certificate registration: " email
-        if [[ -n "$email" ]]; then
-            break
-        else
-            echo "Email address cannot be empty. Please enter a valid email."
-        fi
-    done
-
-    install_ssl_certificate "$domain" "$email"
+    install_ssl_certificate "$domain"
     configure_nginx_https "$domain" "$dashboard_port"
 fi
