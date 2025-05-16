@@ -127,14 +127,42 @@ EOF
     echo -e "${GREEN}Nginx has been configured for HTTPS.${NC}"
 }
 
+# Function to stop processes using port 80
+stop_port_80_process() {
+    echo "Checking for processes using port 80..."
+    local pid
+    pid=$(lsof -t -i:80)
+    if [[ -n "$pid" ]]; then
+        echo "Stopping process using port 80 (PID: $pid)..."
+        kill -9 "$pid"
+        echo "Process stopped."
+    else
+        echo "No process is using port 80."
+    fi
+}
+
+# Function to restart Nginx after Certbot
+restart_nginx() {
+    echo "Restarting Nginx..."
+    systemctl restart nginx
+    echo "Nginx restarted."
+}
+
 # Ensure Nginx is installed
 install_nginx
+
+# Stop processes using port 80 before running Certbot
+stop_port_80_process
 
 # Update Certbot dependencies
 update_certbot_dependencies
 
 # Perform SSL setup before proceeding
 install_ssl_certificate "$domain"
+
+# Restart Nginx after Certbot
+restart_nginx
+
 configure_nginx_https "$domain" "8080"  # Default dashboard port
 
 # Check if curl is installed
