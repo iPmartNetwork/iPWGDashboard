@@ -130,12 +130,15 @@ EOF
 # Function to stop processes using port 80
 stop_port_80_process() {
     echo "Checking for processes using port 80..."
-    local pid
-    pid=$(lsof -t -i:80)
-    if [[ -n "$pid" ]]; then
-        echo "Stopping process using port 80 (PID: $pid)..."
-        kill -9 "$pid"
-        echo "Process stopped."
+    local pids
+    pids=$(lsof -t -i:80)
+    if [[ -n "$pids" ]]; then
+        echo "Stopping processes using port 80..."
+        while read -r pid; do
+            echo "Stopping process with PID: $pid"
+            kill -9 "$pid"
+        done <<< "$pids"
+        echo "All processes using port 80 have been stopped."
     else
         echo "No process is using port 80."
     fi
