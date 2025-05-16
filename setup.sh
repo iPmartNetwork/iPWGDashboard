@@ -40,6 +40,88 @@ while true; do
     fi
 done
 
+# Function to install Nginx
+install_nginx() {
+    echo "Installing Nginx..."
+    apt update -y >/dev/null 2>&1
+    apt install -y nginx >/dev/null 2>&1
+    systemctl enable nginx >/dev/null 2>&1
+    systemctl start nginx >/dev/null 2>&1
+    echo -e "${GREEN}Nginx has been installed and started.${NC}"
+}
+
+# Function to install Certbot and obtain SSL certificates
+install_ssl_certificate() {
+    local domain="$1"
+
+    echo "Installing Certbot for SSL certificate generation..."
+    apt update -y >/dev/null 2>&1
+    apt install -y certbot >/dev/null 2>&1
+
+    echo "Obtaining SSL certificate for domain: $domain..."
+    certbot certonly --standalone --agree-tos --register-unsafely-without-email -d "$domain"
+
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}SSL certificate successfully obtained for $domain.${NC}"
+        # Write configuration to certbot.ini
+        cat <<EOF > /etc/letsencrypt/certbot.ini
+# Certbot configuration
+domains = $domain
+rsa-key-size = 2048
+authenticator = standalone
+EOF
+        echo -e "${GREEN}Configuration written to /etc/letsencrypt/certbot.ini.${NC}"
+    else
+        echo -e "${RED}Failed to obtain SSL certificate for $domain. Please check the domain and try again.${NC}"
+        exit 1
+    fi
+}
+
+# Function to configure Nginx for HTTPS
+configure_nginx_https() {
+    local domain="$1"
+    local dashboard_port="$2"
+
+    echo "Configuring Nginx for HTTPS..."
+    cat <<EOF > /etc/nginx/sites-available/wg-dashboard
+server {
+    listen 80;
+    server_name $domain;
+
+    location / {
+        return 301 https://\$host\$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name $domain;
+
+    ssl_certificate /etc/letsencrypt/live/$domain/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$domain/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:$dashboard_port;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF
+
+    ln -s /etc/nginx/sites-available/wg-dashboard /etc/nginx/sites-enabled/
+    nginx -t && systemctl reload nginx
+    echo -e "${GREEN}Nginx has been configured for HTTPS.${NC}"
+}
+
+# Ensure Nginx is installed
+install_nginx
+
+# Perform SSL setup before proceeding
+install_ssl_certificate "$domain"
+configure_nginx_https "$domain" "8080"  # Default dashboard port
+
 # Check if curl is installed
 if ! check_dpkg_package_installed curl; then
     echo "Installing curl..."
