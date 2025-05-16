@@ -21,6 +21,25 @@ validate_port() {
     fi
 }
 
+# Prompt for domain name and email for SSL setup
+while true; do
+    read -p "Enter your domain name for SSL setup (e.g., example.com): " domain
+    if [[ -n "$domain" ]]; then
+        break
+    else
+        echo "Domain name cannot be empty. Please enter a valid domain."
+    fi
+done
+
+while true; do
+    read -p "Enter your email address for SSL certificate registration: " email
+    if [[ -n "$email" ]]; then
+        break
+    else
+        echo "Email address cannot be empty. Please enter a valid email."
+    fi
+done
+
 # Check if curl is installed
 if ! check_dpkg_package_installed curl; then
     echo "Installing curl..."
