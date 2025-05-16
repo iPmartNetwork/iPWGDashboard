@@ -50,6 +50,18 @@ install_nginx() {
     echo -e "${GREEN}Nginx has been installed and started.${NC}"
 }
 
+# Function to update Python libraries required for Certbot
+update_certbot_dependencies() {
+    echo "Updating Python libraries required for Certbot..."
+    pip install --upgrade urllib3 requests_toolbelt >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Python libraries updated successfully.${NC}"
+    else
+        echo -e "${RED}Failed to update Python libraries. Please check your Python environment.${NC}"
+        exit 1
+    fi
+}
+
 # Function to install Certbot and obtain SSL certificates
 install_ssl_certificate() {
     local domain="$1"
@@ -117,6 +129,9 @@ EOF
 
 # Ensure Nginx is installed
 install_nginx
+
+# Update Certbot dependencies
+update_certbot_dependencies
 
 # Perform SSL setup before proceeding
 install_ssl_certificate "$domain"
