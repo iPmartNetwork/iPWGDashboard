@@ -75,14 +75,14 @@ install_ssl_certificate() {
 
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}SSL certificate successfully obtained for $domain.${NC}"
-        # Write configuration to certbot.ini
-        cat <<EOF > /etc/letsencrypt/certbot.ini
-# Certbot configuration
-domains = $domain
-rsa-key-size = 2048
-authenticator = standalone
+        # Write configuration to ssl_tls.ini
+        cat <<EOF > /etc/letsencrypt/ssl_tls.ini
+# SSL/TLS Configuration
+domain = $domain
+ssl_certificate = /etc/letsencrypt/live/$domain/fullchain.pem
+ssl_certificate_key = /etc/letsencrypt/live/$domain/privkey.pem
 EOF
-        echo -e "${GREEN}Configuration written to /etc/letsencrypt/certbot.ini.${NC}"
+        echo -e "${GREEN}Configuration written to /etc/letsencrypt/ssl_tls.ini.${NC}"
     else
         echo -e "${RED}Failed to obtain SSL certificate for $domain. Please check the domain and try again.${NC}"
         exit 1
@@ -963,14 +963,14 @@ install_ssl_certificate() {
 
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}SSL certificate successfully obtained for $domain.${NC}"
-        # Write configuration to certbot.ini
-        cat <<EOF > /etc/letsencrypt/certbot.ini
-# Certbot configuration
-domains = $domain
-rsa-key-size = 2048
-authenticator = standalone
+        # Write configuration to ssl_tls.ini
+        cat <<EOF > /etc/letsencrypt/ssl_tls.ini
+# SSL/TLS Configuration
+domain = $domain
+ssl_certificate = /etc/letsencrypt/live/$domain/fullchain.pem
+ssl_certificate_key = /etc/letsencrypt/live/$domain/privkey.pem
 EOF
-        echo -e "${GREEN}Configuration written to /etc/letsencrypt/certbot.ini.${NC}"
+        echo -e "${GREEN}Configuration written to /etc/letsencrypt/ssl_tls.ini.${NC}"
     else
         echo -e "${RED}Failed to obtain SSL certificate for $domain. Please check the domain and try again.${NC}"
         exit 1
