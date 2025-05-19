@@ -40,6 +40,14 @@ apt update && apt install git -y && git clone https://github.com/iPmartNetwork/i
 
 ```
 
+
+## نصب همراه با amzenia
+
+```bash
+apt update && apt install git -y && git clone https://github.com/iPmartNetwork/iPWGDashboard && cd iPWGDashboard && chmod +x installV2.sh && ./installV2.sh
+
+```
+
 ---
 
 ## 🛠️ نیازمندی‌ها
