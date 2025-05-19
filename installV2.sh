@@ -42,12 +42,12 @@ case "$main_choice" in
   2)
     echo -e "${GREEN}You selected: AmneziaWG${NC}"
     # اجرای نصب AmneziaWG
-    if [ ! -f ./amneziawg-install.sh ]; then
+    if [ ! -f ./amneziawg.sh ]; then
       echo -e "${YELLOW}Downloading AmneziaWG installer...${NC}"
       wget -q https://raw.githubusercontent.com/iPmartnetwork/iPWGDashboard/master/amneziawg.sh -O ./amneziawg.sh
       chmod +x ./amneziawg.sh
     fi
-    bash ./amneziawg-install.sh
+    bash ./amneziawg.sh
     exit 0
     ;;
   3)
