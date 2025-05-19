@@ -2935,7 +2935,7 @@ def API_traceroute_execute():
 def API_getDashboardUpdate():
     import urllib.request as req
     try:
-        r = req.urlopen("https://api.github.com/repos/iPmartNetwork/iPWGDashboard/releases/latest", timeout=5).read()
+        r = req.urlopen("https://api.github.com/repos/donaldzou/WGDashboard/releases/latest", timeout=5).read()
         data = dict(json.loads(r))
         tagName = data.get('tag_name')
         htmlUrl = data.get('html_url')
