@@ -25,7 +25,7 @@ from modules.PeerJob import PeerJob
 from modules.SystemStatus import SystemStatus
 SystemStatus = SystemStatus()
 
-DASHBOARD_VERSION = 'v4.2.3'
+DASHBOARD_VERSION = 'v4.2.4'
 
 CONFIGURATION_PATH = os.getenv('CONFIGURATION_PATH', '.')
 DB_PATH = os.path.join(CONFIGURATION_PATH, 'db')
@@ -2051,7 +2051,7 @@ def auth_req():
         else:
             DashboardConfig.APIAccessed = False
             whiteList = [
-                '/static/', 'validateAuthentication', 'authenticate', 'getDashboardConfiguration',
+                '/static/', 'validateAuthentication', 'authenticate',
                 'getDashboardTheme', 'getDashboardVersion', 'sharePeer/get', 'isTotpEnabled', 'locale',
                 '/fileDownload'
             ]
@@ -3115,16 +3115,19 @@ def peerInformationBackgroundThread():
     time.sleep(10)
     while True:
         with app.app_context():
-            for c in WireguardConfigurations.values():
-                if c.getStatus():
-                    try:
-                        c.getPeersTransfer()
-                        c.getPeersLatestHandshake()
-                        c.getPeersEndpoint()
-                        c.getPeersList()
-                        c.getRestrictedPeersList()
-                    except Exception as e:
-                        print(f"[WGDashboard] Background Thread #1 Error: {str(e)}", flush=True)
+            try:
+                curKeys = list(WireguardConfigurations.keys())
+                for name in curKeys:
+                    if name in WireguardConfigurations.keys() and WireguardConfigurations.get(name) is not None:
+                        c = WireguardConfigurations.get(name)
+                        if c.getStatus():
+                            c.getPeersTransfer()
+                            c.getPeersLatestHandshake()
+                            c.getPeersEndpoint()
+                            c.getPeersList()
+                            c.getRestrictedPeersList()
+            except Exception as e:
+                print(f"[WGDashboard] Background Thread #1 Error: {str(e)}", flush=True)
         time.sleep(10)
 
 def peerJobScheduleBackgroundThread():
