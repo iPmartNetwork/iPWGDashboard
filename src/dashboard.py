@@ -25,7 +25,7 @@ from modules.PeerJob import PeerJob
 from modules.SystemStatus import SystemStatus
 SystemStatus = SystemStatus()
 
-DASHBOARD_VERSION = 'v4.2.4'
+DASHBOARD_VERSION = 'v4.2.5'
 
 CONFIGURATION_PATH = os.getenv('CONFIGURATION_PATH', '.')
 DB_PATH = os.path.join(CONFIGURATION_PATH, 'db')
@@ -1765,7 +1765,7 @@ class DashboardConfig:
     def __init__(self):
         if not os.path.exists(DASHBOARD_CONF):
             open(DASHBOARD_CONF, "x")
-        self.__config = configparser.ConfigParser(strict=False)
+        self.__config = configparser.RawConfigParser(strict=False)
         self.__config.read_file(open(DASHBOARD_CONF, "r+"))
         self.hiddenAttribute = ["totp_key", "auth_req"]
         self.__default = {
@@ -2382,7 +2382,7 @@ def API_updateDashboardConfigurationItem():
     valid, msg = DashboardConfig.SetConfig(
         data["section"], data["key"], data['value'])
     if not valid:
-        return ResponseObject(False, msg, status_code=404)
+        return ResponseObject(False, msg)
     if data['section'] == "Server":
         if data['key'] == 'wg_conf_path':
             WireguardConfigurations.clear()
